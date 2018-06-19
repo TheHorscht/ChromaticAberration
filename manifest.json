@@ -1,18 +1,16 @@
 {
   "name": "ChromaticAberration",
-  "version": "0.1",
+  "version": "1.0",
   "manifest_version": 2,
-  "description": "Makes everything look like a AAA game.",
+  "description": "Makes everything look like a modern AAA game.",
   "content_scripts": [
     {
-      "matches": ["file://*/*"],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "css": ["style.css"],
       "js": ["script.js"]
     }
   ],
   "web_accessible_resources": [
-    "bop.svg",
-    "chromatic-aberration.filter",
-    "chromatic-aberration2.filter"
+    "chromatic-aberration.svg"
   ]
 }

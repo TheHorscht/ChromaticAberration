@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+	<defs>
+		<filter id="chromatic-aberration">
+		<feOffset
+			dx="-3"
+			dy="0"
+			in="SourceGraphic"
+			result="redChannel" />
+		<feOffset
+			dx="0"
+			dy="0"
+			in="SourceGraphic"
+			result="greenChannel" />
+		<feOffset
+			dx="3"
+			dy="0"
+			in="SourceGraphic"
+			result="blueChannel" />
+		<feColorMatrix
+			in="redChannel"
+			values="1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
+			result="redShifted" />
+		<feColorMatrix
+			in="greenChannel"
+			values="0 0 0 0 1 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0"
+			result="greenShifted" />
+		<feColorMatrix
+			in="blueChannel"
+			values="0 0 0 0 1 0 0 0 0 1 0 0 1 0 0 0 0 0 1 0"
+			result="blueShifted" />
+		<feBlend
+			mode="multiply"
+			in="redShifted"
+			in2="greenShifted"
+			result="redAndGreenBlended" />
+		<feBlend
+			mode="multiply"
+			in="blueShifted"
+			in2="redAndGreenBlended" />
+		</filter>
+	</defs>
+</svg>
