@@ -2,7 +2,7 @@
     filter: url(#filter25);
 } */
 body.chromatic-aberration {
-    filter: url(#filter25);
+    filter: url(#myFilter);
 }
 #feOffset22 {
     /* dx: calc(var(--mouseX) * 10); */
