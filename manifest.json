@@ -12,6 +12,7 @@
   ],
   "web_accessible_resources": [
     "bop.svg",
-    "chromatic-aberration.filter"
+    "chromatic-aberration.filter",
+    "chromatic-aberration2.filter"
   ]
 }

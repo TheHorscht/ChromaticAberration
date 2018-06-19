@@ -1,14 +1,14 @@
 async function applyChromaticAberration() {
-	let response = await fetch(chrome.extension.getURL("chromatic-aberration.filter"));
+	let response = await fetch(chrome.extension.getURL("chromatic-aberration2.filter"));
 	let svgFilter = await response.text();
 	let svgNamespace = "http://www.w3.org/2000/svg";
 	let svg = document.createElementNS(svgNamespace, "svg");
-	svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 	let defs = document.createElementNS(svgNamespace, "defs");
 	svg.appendChild(defs);
 	document.body.appendChild(svg);
 
 	let pees = document.getElementsByTagName("p");
+	pees = document.querySelectorAll("p, img");
 	let affectedElements = [];
 
 	for(let i = 0; i < pees.length; i++) {
@@ -41,9 +41,9 @@ async function applyChromaticAberration() {
 
 		affectedElements.forEach(element => {
 			let dist = getDistanceToElement(element.element, viewportMouseX, viewportMouseY);
-			element.applyEffect(dist.x * 10, dist.y * 10, 
-								dist.x * 20, dist.y * 20,
-								dist.x * 30, dist.y * 30);
+			element.applyEffect(dist.x * -10, dist.y * -10, 
+								dist.x * -20, dist.y * -20,
+								dist.x * -30, dist.y * -30);
 		});
 
 		// Necessary in Chrome to trigger redraw
@@ -52,11 +52,6 @@ async function applyChromaticAberration() {
 }
 
 applyChromaticAberration();
-
-/* document.addEventListener("mousemove", ev => {
-	let img = document.querySelector("img");
-	console.log(getDistanceToElement(img, ev.x, ev.y));
-}); */
 
 function getDistanceToElement(element, x, y) {
 	let rect = { top: element.offsetTop - window.scrollY,
