@@ -1,6 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg">
+<svg id="chromatic-aberration-filter-effect-svg" xmlns="http://www.w3.org/2000/svg">
 	<defs>
-		<filter style="color-interpolation-filters:sRGB" id="myFilter">
+		<filter
+		id="myFilter"
+		inkscape:label="Additive Chromatic Aberration"
+		inkscape:menu="Optical Defect"
+		inkscape:menu-tooltip="Decompose the object into RGB additive chromatic aberration">
+		<feOffset
+			dx="0"
+			dy="0"
+			id="feOffsetR"
+			in="SourceGraphic"
+			result="result1" />
+		<feOffset
+			dx="0"
+			dy="0"
+			id="feOffsetG"
+			in="SourceGraphic"
+			result="result2" />
+		<feOffset
+			dx="0"
+			dy="0"
+			id="feOffsetB"
+			in="SourceGraphic"
+			result="result3" />
+		<feColorMatrix
+			id="feColorMatrix28"
+			in="result1"
+			values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 "
+			result="result4" />
+		<feColorMatrix
+			id="feColorMatrix30"
+			in="result2"
+			values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 "
+			result="result5" />
+		<feColorMatrix
+			id="feColorMatrix32"
+			in="result3"
+			values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 "
+			result="result6" />
+		<feBlend
+			mode="screen"
+			id="feBlend34"
+			in="result4"
+			in2="result5"
+			result="result7" />
+		<feBlend
+			mode="screen"
+			id="feBlend36"
+			in="result6"
+			in2="result7" />
 		</filter>
 	</defs>
 </svg>
