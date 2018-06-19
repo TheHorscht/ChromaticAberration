@@ -1,0 +1,16 @@
+{
+  "name": "ChromaticAberration",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Makes everything look like a AAA game.",
+  "content_scripts": [
+    {
+      "matches": ["file://*/*"],
+      "css": ["style.css"],
+      "js": ["script.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    "bop.svg"
+  ]
+}

@@ -1,0 +1,10 @@
+/* img.chromatic-aberration {
+    filter: url(#filter25);
+} */
+body.chromatic-aberration {
+    filter: url(#filter25);
+}
+#feOffset22 {
+    /* dx: calc(var(--mouseX) * 10); */
+    dx: 50;
+}
