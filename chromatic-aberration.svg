@@ -36,7 +36,13 @@
 		<feBlend
 			mode="multiply"
 			in="blueShifted"
-			in2="redAndGreenBlended" />
+			in2="redAndGreenBlended"
+			result="aberrated" />
+        <feTurbulence id="turbo" type="turbulence" baseFrequency="0.005"
+            numOctaves="2" result="displacement"/>
+        <feDisplacementMap in="aberrated" in2="displacement"
+                             scale="10" xChannelSelector="R" yChannelSelector="G" />
 		</filter>
+
 	</defs>
 </svg>

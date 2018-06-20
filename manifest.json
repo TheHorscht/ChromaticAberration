@@ -11,6 +11,7 @@
     }
   ],
   "web_accessible_resources": [
-    "chromatic-aberration.svg"
+    "chromatic-aberration.svg",
+    "none.png"
   ]
 }
