@@ -2,7 +2,7 @@
 	<defs>
 		<filter id="chromatic-aberration">
 		<feOffset
-			dx="-3"
+			dx="-1"
 			dy="0"
 			in="SourceGraphic"
 			result="redChannel" />
@@ -12,7 +12,7 @@
 			in="SourceGraphic"
 			result="greenChannel" />
 		<feOffset
-			dx="3"
+			dx="1"
 			dy="0"
 			in="SourceGraphic"
 			result="blueChannel" />
@@ -28,20 +28,27 @@
 			in="blueChannel"
 			values="0 0 0 0 1 0 0 0 0 1 0 0 1 0 0 0 0 0 1 0"
 			result="blueShifted" />
+        <feTurbulence id="turbuR" type="turbulence" baseFrequency="0.005" seed="1"
+            numOctaves="1" result="turbuR"/>
+		<feTurbulence id="turbuG" type="turbulence" baseFrequency="0.005" seed="2"
+            numOctaves="1" result="turbuG"/>
+		<feTurbulence id="turbuB" type="turbulence" baseFrequency="0.005" seed="3"
+            numOctaves="1" result="turbuB"/>
+        <feDisplacementMap in="redShifted" in2="turbuR" result="displacedR"
+                             scale="20" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="greenShifted" in2="turbuG" result="displacedG"
+                             scale="10" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="blueShifted" in2="turbuB" result="displacedB"
+                             scale="5" xChannelSelector="R" yChannelSelector="G" />
 		<feBlend
 			mode="multiply"
-			in="redShifted"
-			in2="greenShifted"
+			in="displacedR"
+			in2="displacedG"
 			result="redAndGreenBlended" />
 		<feBlend
 			mode="multiply"
-			in="blueShifted"
-			in2="redAndGreenBlended"
-			result="aberrated" />
-        <feTurbulence id="turbo" type="turbulence" baseFrequency="0.005"
-            numOctaves="2" result="displacement"/>
-        <feDisplacementMap in="aberrated" in2="displacement"
-                             scale="10" xChannelSelector="R" yChannelSelector="G" />
+			in="displacedB"
+			in2="redAndGreenBlended" />
 		</filter>
 
 	</defs>
