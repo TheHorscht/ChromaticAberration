@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg">
 	<defs>
-		<filter id="chromatic-aberration">
+		<filter id="chromatic-aberration-with-waves">
 		<feOffset
 			dx="-1"
 			dy="0"
@@ -18,15 +18,15 @@
 			result="blueChannel" />
 		<feColorMatrix
 			in="redChannel"
-			values="1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
+			values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"
 			result="redShifted" />
 		<feColorMatrix
 			in="greenChannel"
-			values="0 0 0 0 1 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0"
+			values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0"
 			result="greenShifted" />
 		<feColorMatrix
 			in="blueChannel"
-			values="0 0 0 0 1 0 0 0 0 1 0 0 1 0 0 0 0 0 1 0"
+			values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0"
 			result="blueShifted" />
         <feTurbulence id="turbuR" type="fractalNoise" baseFrequency="0.005" seed="1"
             numOctaves="1" result="turbuR"/>
@@ -41,15 +41,52 @@
         <feDisplacementMap in="blueShifted" in2="turbuB" result="displacedB"
                              scale="5" xChannelSelector="R" yChannelSelector="G" />
 		<feBlend
-			mode="multiply"
+			mode="lighten"
 			in="displacedR"
 			in2="displacedG"
 			result="redAndGreenBlended" />
 		<feBlend
-			mode="multiply"
+			mode="lighten"
 			in="displacedB"
 			in2="redAndGreenBlended" />
 		</filter>
-
+		<filter id="chromatic-aberration">
+		<feOffset
+			dx="-3"
+			dy="0"
+			in="SourceGraphic"
+			result="redChannel" />
+		<feOffset
+			dx="0"
+			dy="0"
+			in="SourceGraphic"
+			result="greenChannel" />
+		<feOffset
+			dx="3"
+			dy="0"
+			in="SourceGraphic"
+			result="blueChannel" />
+		<feColorMatrix
+			in="redChannel"
+			values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"
+			result="redShifted" />
+		<feColorMatrix
+			in="greenChannel"
+			values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0"
+			result="greenShifted" />
+		<feColorMatrix
+			in="blueChannel"
+			values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0"
+			result="blueShifted" />
+		<feBlend
+			mode="lighten"
+			in="redShifted"
+			in2="greenShifted"
+			result="redAndGreenBlended" />
+		<feBlend
+			mode="lighten"
+			in="blueShifted"
+			in2="redAndGreenBlended" />
+		</filter>
 	</defs>
 </svg>

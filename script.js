@@ -1,10 +1,18 @@
 async function applyChromaticAberration() {
+	let settings = await getSettings();
+	if(!settings.enabled) {
+		return;
+	}
 	let response = await fetch(chrome.extension.getURL("chromatic-aberration.svg"));
 	let svgFileContent = await response.text();
 	let svgContainer = document.createElement("div");
 	svgContainer.innerHTML = svgFileContent;
 	document.body.appendChild(svgContainer);
-	document.body.classList.add("chromatic-aberration");
+	if(settings.wavy) {
+		document.body.style += ";filter:url(#chromatic-aberration-with-waves);";
+	} else {
+		document.body.style += ";filter:url(#chromatic-aberration);";
+	}
 
 	let beepR = 0;
 	let beepG = 0;
@@ -20,9 +28,9 @@ async function applyChromaticAberration() {
 		turbuR.setAttribute("baseFrequency", 0.005 + Math.cos(beepR * Math.PI * 2) * 0.005);
 		turbuG.setAttribute("baseFrequency", 0.005 + Math.cos(beepG * Math.PI * 2) * 0.005);
 		turbuB.setAttribute("baseFrequency", 0.005 + Math.cos(beepB * Math.PI * 2) * 0.005);
-		beepR += 0.0005 * dirR;
-		beepG += 0.0008 * dirG;
-		beepB += 0.00037 * dirB;
+		beepR += 0.000005 * settings.waveSpeed * dirR;
+		beepG += 0.000008 * settings.waveSpeed * dirG;
+		beepB += 0.0000037 * settings.waveSpeed * dirB;
 		if(beepR > 1 || beepR < 0) {
 			dirR *= -1;
 		}
@@ -39,13 +47,16 @@ async function applyChromaticAberration() {
 }
 
 applyChromaticAberration();
-
-/*
-
-How to do chromatic aberration with displacement:
-Use an image as the displacement map source feImage
-Offset that image to move it around
-feImage displace.jpg
-feOffset dx dy = mousepos, in=feImgae result=disOffset
-displacementMap input=disOffset
- */
+// TODO: Make sure that on install some defaults get set.
+function getSettings() {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get(({ enabled, wavy, strength, waveSpeed }) => {
+			resolve({ enabled, wavy, strength, waveSpeed });
+		});
+	});
+}
+/* chrome.storage.local.get(({ enabled, wavy, strength }) => {
+    cbEnabled.checked = enabled;
+    cbWavy.checked = wavy;
+    inputStrength.value = strength;
+}); */

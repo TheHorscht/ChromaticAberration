@@ -11,7 +11,16 @@
     }
   ],
   "web_accessible_resources": [
-    "chromatic-aberration.svg",
-    "none.png"
-  ]
+    "chromatic-aberration.svg"
+  ],
+  "browser_action": {
+    "default_icon": {
+      "16": "16.png",
+      "24": "24.png",
+      "32": "32.png"
+    },
+    "default_title": "Chromatic Aberration Settings",
+    "default_popup": "popup.htm"
+  },
+  "permissions": ["storage"]
 }
