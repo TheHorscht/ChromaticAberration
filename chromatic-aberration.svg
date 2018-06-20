@@ -28,11 +28,11 @@
 			in="blueChannel"
 			values="0 0 0 0 1 0 0 0 0 1 0 0 1 0 0 0 0 0 1 0"
 			result="blueShifted" />
-        <feTurbulence id="turbuR" type="turbulence" baseFrequency="0.005" seed="1"
+        <feTurbulence id="turbuR" type="fractalNoise" baseFrequency="0.005" seed="1"
             numOctaves="1" result="turbuR"/>
-		<feTurbulence id="turbuG" type="turbulence" baseFrequency="0.005" seed="2"
+		<feTurbulence id="turbuG" type="fractalNoise" baseFrequency="0.005" seed="2"
             numOctaves="1" result="turbuG"/>
-		<feTurbulence id="turbuB" type="turbulence" baseFrequency="0.005" seed="3"
+		<feTurbulence id="turbuB" type="fractalNoise" baseFrequency="0.005" seed="3"
             numOctaves="1" result="turbuB"/>
         <feDisplacementMap in="redShifted" in2="turbuR" result="displacedR"
                              scale="20" xChannelSelector="R" yChannelSelector="G" />
