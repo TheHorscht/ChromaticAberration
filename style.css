@@ -7,3 +7,6 @@ body.chromatic-aberration-subtractive {
 body.chromatic-aberration-wavy {
     filter: url(#chromatic-aberration-wavy);
 }
+body.chromatic-aberration-wavy-subtractive {
+    filter: url(#chromatic-aberration-wavy-subtractive);
+}

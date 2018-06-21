@@ -1,56 +1,109 @@
 <svg id="chromatic-aberration-effects" width="0" xmlns="http://www.w3.org/2000/svg">
 	<defs>
 		<filter id="chromatic-aberration-wavy">
-		<feOffset
-			dx="-1"
-			dy="0"
-			in="SourceGraphic"
-			result="redChannel" />
-		<feOffset
-			dx="0"
-			dy="0"
-			in="SourceGraphic"
-			result="greenChannel" />
-		<feOffset
-			dx="1"
-			dy="0"
-			in="SourceGraphic"
-			result="blueChannel" />
-		<feColorMatrix
-			in="redChannel"
-			values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"
-			result="redShifted" />
-		<feColorMatrix
-			in="greenChannel"
-			values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0"
-			result="greenShifted" />
-		<feColorMatrix
-			in="blueChannel"
-			values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0"
-			result="blueShifted" />
-        <feTurbulence id="turbuR" type="fractalNoise" baseFrequency="0.005" seed="1"
-            numOctaves="1" result="turbuR"/>
-		<feTurbulence id="turbuG" type="fractalNoise" baseFrequency="0.005" seed="2"
-            numOctaves="1" result="turbuG"/>
-		<feTurbulence id="turbuB" type="fractalNoise" baseFrequency="0.005" seed="3"
-            numOctaves="1" result="turbuB"/>
-        <feDisplacementMap in="redShifted" in2="turbuR" result="displacedR"
-                             scale="20" xChannelSelector="R" yChannelSelector="G" />
-        <feDisplacementMap in="greenShifted" in2="turbuG" result="displacedG"
-                             scale="10" xChannelSelector="R" yChannelSelector="G" />
-        <feDisplacementMap in="blueShifted" in2="turbuB" result="displacedB"
-                             scale="5" xChannelSelector="R" yChannelSelector="G" />
-		<feBlend
-			mode="screen"
-			in="displacedR"
-			in2="displacedG"
-			result="redAndGreenBlended" />
-		<feBlend
-			mode="screen"
-			in="displacedB"
-			in2="redAndGreenBlended" />
+			<feOffset
+				dx="-1"
+				dy="0"
+				in="SourceGraphic"
+				result="redChannel" />
+			<feOffset
+				dx="0"
+				dy="0"
+				in="SourceGraphic"
+				result="greenChannel" />
+			<feOffset
+				dx="1"
+				dy="0"
+				in="SourceGraphic"
+				result="blueChannel" />
+			<feColorMatrix
+				in="redChannel"
+				values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"
+				result="redShifted" />
+			<feColorMatrix
+				in="greenChannel"
+				values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0"
+				result="greenShifted" />
+			<feColorMatrix
+				in="blueChannel"
+				values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0"
+				result="blueShifted" />
+			<feTurbulence id="turbuR" type="fractalNoise" baseFrequency="0.005" seed="1"
+				numOctaves="1" result="turbuR"/>
+			<feTurbulence id="turbuG" type="fractalNoise" baseFrequency="0.005" seed="2"
+				numOctaves="1" result="turbuG"/>
+			<feTurbulence id="turbuB" type="fractalNoise" baseFrequency="0.005" seed="3"
+				numOctaves="1" result="turbuB"/>
+			<feDisplacementMap in="redShifted" in2="turbuR" result="displacedR"
+								scale="20" xChannelSelector="R" yChannelSelector="G" />
+			<feDisplacementMap in="greenShifted" in2="turbuG" result="displacedG"
+								scale="10" xChannelSelector="R" yChannelSelector="G" />
+			<feDisplacementMap in="blueShifted" in2="turbuB" result="displacedB"
+								scale="5" xChannelSelector="R" yChannelSelector="G" />
+			<feBlend
+				mode="screen"
+				in="displacedR"
+				in2="displacedG"
+				result="redAndGreenBlended" />
+			<feBlend
+				mode="screen"
+				in="displacedB"
+				in2="redAndGreenBlended" />
 		</filter>
 
+
+
+
+		<filter id="chromatic-aberration-wavy-subtractive">
+			<feOffset
+				dx="-1"
+				dy="0"
+				in="SourceGraphic"
+				result="redChannel" />
+			<feOffset
+				dx="0"
+				dy="0"
+				in="SourceGraphic"
+				result="greenChannel" />
+			<feOffset
+				dx="1"
+				dy="0"
+				in="SourceGraphic"
+				result="blueChannel" />
+			<feColorMatrix
+				in="redChannel"
+				values="1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
+				result="redShifted" />
+			<feColorMatrix
+				in="greenChannel"
+				values="0 0 0 0 1 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0"
+				result="greenShifted" />
+			<feColorMatrix
+				in="blueChannel"
+				values="0 0 0 0 1 0 0 0 0 1 0 0 1 0 0 0 0 0 1 0"
+				result="blueShifted" />
+			<feTurbulence id="turbuSubR" type="fractalNoise" baseFrequency="0.005" seed="1"
+				numOctaves="1" result="turbuR"/>
+			<feTurbulence id="turbuSubG" type="fractalNoise" baseFrequency="0.005" seed="2"
+				numOctaves="1" result="turbuG"/>
+			<feTurbulence id="turbuSubB" type="fractalNoise" baseFrequency="0.005" seed="3"
+				numOctaves="1" result="turbuB"/>
+			<feDisplacementMap in="redShifted" in2="turbuR" result="displacedR"
+								scale="20" xChannelSelector="R" yChannelSelector="G" />
+			<feDisplacementMap in="greenShifted" in2="turbuG" result="displacedG"
+								scale="10" xChannelSelector="R" yChannelSelector="G" />
+			<feDisplacementMap in="blueShifted" in2="turbuB" result="displacedB"
+								scale="5" xChannelSelector="R" yChannelSelector="G" />
+			<feBlend
+				mode="multiply"
+				in="displacedR"
+				in2="displacedG"
+				result="redAndGreenBlended" />
+			<feBlend
+				mode="multiply"
+				in="displacedB"
+				in2="redAndGreenBlended" />
+		</filter>
 
 
 

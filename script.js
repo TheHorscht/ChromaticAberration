@@ -2,7 +2,7 @@ async function applyChromaticAberration() {
 	function applyCorrectEffect(settings) {
 		if(settings.enabled) {
 			if(settings.wavy) {
-				applyWavy();
+				applyWavy(settings.additive);
 			} else {
 				applyStatic(settings.additive);
 			}
@@ -33,6 +33,9 @@ async function applyChromaticAberration() {
 		elements.turbu.r.setAttribute("baseFrequency", 0.005 + Math.cos(progress.r.value() * Math.PI * 2) * 0.005);
 		elements.turbu.g.setAttribute("baseFrequency", 0.005 + Math.cos(progress.g.value() * Math.PI * 2) * 0.005);
 		elements.turbu.b.setAttribute("baseFrequency", 0.005 + Math.cos(progress.b.value() * Math.PI * 2) * 0.005);
+		elements.turbu.rs.setAttribute("baseFrequency", 0.005 + Math.cos(progress.r.value() * Math.PI * 2) * 0.005);
+		elements.turbu.gs.setAttribute("baseFrequency", 0.005 + Math.cos(progress.g.value() * Math.PI * 2) * 0.005);
+		elements.turbu.bs.setAttribute("baseFrequency", 0.005 + Math.cos(progress.b.value() * Math.PI * 2) * 0.005);
 		progress.r.advance(0.0000152 * settings.waveSpeed);
 		progress.g.advance(0.0000223 * settings.waveSpeed);
 		progress.b.advance(0.0000117 * settings.waveSpeed);
@@ -65,10 +68,13 @@ async function applyChromaticAberration() {
 	window.requestAnimationFrame(loop);
 }
 
-function applyWavy() {
-	document.body.classList.add("chromatic-aberration-wavy");
-	document.body.classList.remove("chromatic-aberration");
-	document.body.classList.remove("chromatic-aberration-subtractive");
+function applyWavy(additive) {
+	removeEffect();
+	if(additive) {
+		document.body.classList.add("chromatic-aberration-wavy");		
+	} else {
+		document.body.classList.add("chromatic-aberration-wavy-subtractive");
+	}
 }
 function applyStatic(additive) {
 	removeEffect();
@@ -80,6 +86,7 @@ function applyStatic(additive) {
 }
 function removeEffect() {
 	document.body.classList.remove("chromatic-aberration-wavy");
+	document.body.classList.remove("chromatic-aberration-wavy-subtractive");
 	document.body.classList.remove("chromatic-aberration");
 	document.body.classList.remove("chromatic-aberration-subtractive");
 }
@@ -140,6 +147,10 @@ async function initialize() {
 	let turbuR = document.getElementById("turbuR");
 	let turbuG = document.getElementById("turbuG");
 	let turbuB = document.getElementById("turbuB");
+
+	let turbuSubR = document.getElementById("turbuSubR");
+	let turbuSubG = document.getElementById("turbuSubG");
+	let turbuSubB = document.getElementById("turbuSubB");
 	
 	let offsetRed = document.getElementById("chromatic-aberration-offset-red");
 	let offsetGreen = document.getElementById("chromatic-aberration-offset-green");
@@ -154,7 +165,10 @@ async function initialize() {
 		turbu: {
 			r: turbuR,
 			g: turbuG,
-			b: turbuB
+			b: turbuB,
+			rs: turbuSubR,
+			gs: turbuSubG,
+			bs: turbuSubB
 		},
 		offset: {
 			r: offsetRed,
