@@ -9,13 +9,30 @@
     label {
         display: block;
     }
+    .panel[data-show="false"] {
+        display: none;
+    }
+    fieldset {
+        white-space: nowrap;
+    }
+    input[type="radio"] {
+        vertical-align: middle;
+    }
     </style>
 </head>
 <body>
     <label><input type="checkbox" id="enabled"> Enabled</label>
-    <label><input type="checkbox" id="wavy"> Wave</label>
-    <label>Static Effect Strength: <input type="range" min="1" max="20" step="1" value="3" id="strength"></label>
-    <label>Wave Speed: <input type="range" min="1" max="100" step="1" value="10" id="waveSpeed"></label>
+    <fieldset title="Effect Type">
+        <legend>Effect Type</legend>
+        <label>Static <input type="radio" name="effectType" id="rbStatic"></label>
+        <label>LSD <input type="radio" name="effectType" id="rbWavy"></label>
+    </fieldset>
+    <div id="panelStatic" class="panel" data-show="false">
+        <label>Strength: <input type="range" min="1" max="20" step="1" value="3" id="strength"></label>
+    </div>
+    <div id="panelWavy" class="panel" data-show="false">
+        <label>Speed: <input type="range" min="1" max="100" step="1" value="10" id="waveSpeed"></label>
+    </div>
     <script src="options.js"></script>
 </body>
 </html>

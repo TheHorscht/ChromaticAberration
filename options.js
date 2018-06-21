@@ -1,17 +1,36 @@
 let cbEnabled = document.getElementById("enabled");
-let cbWavy = document.getElementById("wavy");
+let rbStatic = document.getElementById("rbStatic");
+let rbWavy = document.getElementById("rbWavy");
 let inputStrength = document.getElementById("strength");
 let inputWaveSpeed = document.getElementById("waveSpeed");
 
 chrome.storage.local.get(({ enabled, wavy, strength, waveSpeed }) => {
     cbEnabled.checked = enabled;
-    cbWavy.checked = wavy;
     inputStrength.value = strength;
     inputWaveSpeed.value = waveSpeed;
+    if(wavy) {
+        rbWavy.checked = true;
+        panelWavy.dataset["show"] = true;
+    } else {
+        rbStatic.checked = true;
+        panelStatic.dataset["show"] = true;
+    }
+});
+
+let panelStatic = document.getElementById("panelStatic");
+let panelWavy = document.getElementById("panelWavy");
+document.getElementById("rbStatic").addEventListener("input", ev => {
+    panelStatic.dataset["show"] = true;
+    panelWavy.dataset["show"] = false;
+    saveSetting("wavy", false);
+});
+document.getElementById("rbWavy").addEventListener("input", ev => {
+    panelStatic.dataset["show"] = false;
+    panelWavy.dataset["show"] = true;
+    saveSetting("wavy", true);
 });
 
 bindInput(cbEnabled, "enabled");
-bindInput(cbWavy, "wavy");
 bindInput(inputStrength, "strength");
 bindInput(inputWaveSpeed, "waveSpeed");
 
@@ -26,13 +45,15 @@ function bindInput(element, setting) {
     }
     function handler(ev) {
         let value = ev.target[valueProperty];
-        chrome.storage.local.set({ [setting]: value });
-        console.log(`Setting '${setting}' to ${value}.`);
-        //chrome.tabs.get.sendMessage("boopy", "hello");
-        chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-            // chrome.tabs.sendMessage(tabs[0].id, "Hello!", object options, function responseCallback);
-            chrome.tabs.sendMessage(tabs[0].id, { command: "settingsChanged", setting, value });
-        });
+        saveSetting(setting, value);
     }
     element.addEventListener("input", handler);
+}
+
+function saveSetting(setting, value) {
+    chrome.storage.local.set({ [setting]: value });
+    console.log(`Setting '${setting}' to ${value}.`);
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+        chrome.tabs.sendMessage(tabs[0].id, { command: "settingsChanged", setting, value });
+    });
 }
