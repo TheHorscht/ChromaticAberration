@@ -28,6 +28,11 @@ function bindInput(element, setting) {
         let value = ev.target[valueProperty];
         chrome.storage.local.set({ [setting]: value });
         console.log(`Setting '${setting}' to ${value}.`);
+        //chrome.tabs.get.sendMessage("boopy", "hello");
+        chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+            // chrome.tabs.sendMessage(tabs[0].id, "Hello!", object options, function responseCallback);
+            chrome.tabs.sendMessage(tabs[0].id, { command: "settingsChanged", setting, value });
+        });
     }
-    element.addEventListener("change", handler);
+    element.addEventListener("input", handler);
 }

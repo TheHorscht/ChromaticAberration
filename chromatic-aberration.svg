@@ -50,18 +50,22 @@
 			in="displacedB"
 			in2="redAndGreenBlended" />
 		</filter>
+
 		<filter id="chromatic-aberration">
 		<feOffset
+			id="chromatic-aberration-offset-red"
 			dx="-3"
 			dy="0"
 			in="SourceGraphic"
 			result="redChannel" />
 		<feOffset
+			id="chromatic-aberration-offset-green"
 			dx="0"
 			dy="0"
 			in="SourceGraphic"
 			result="greenChannel" />
 		<feOffset
+			id="chromatic-aberration-offset-blue"
 			dx="3"
 			dy="0"
 			in="SourceGraphic"
