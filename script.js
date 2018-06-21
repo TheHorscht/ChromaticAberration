@@ -1,12 +1,61 @@
 async function applyChromaticAberration() {
-	let settings = await getSettings();
+	let settings = (() => {
+		let enabled = true;
+		let wavy = false;
+		let strength = 3;
+		let waveSpeed = 50;
+		return {
+			load: () => new Promise((resolve, reject) => {
+				chrome.storage.local.get(({ enabled, wavy, strength, waveSpeed }) => {
+					// resolve({ enabled, wavy, strength, waveSpeed });
+					this.enabled = enabled;
+					this.wavy = wavy;
+					this.strength = strength;
+					this.waveSpeed = waveSpeed;
+					resolve();
+				});
+			}),
+			get enabled() { return enabled; },
+			set enabled(newValue) {
+				enabled = newValue;
+				if(enabled) {
+					if(wavy) {
+						applyWavy();
+					} else {
+						applyStatic();
+					}
+				} else {
+					removeEffect();
+				}
+			},
+			get wavy() { return wavy; },
+			set wavy(newValue) {
+				wavy = newValue;
+				if(!enabled) return;
+				if(wavy) {
+					applyWavy();
+				} else {
+					applyStatic();
+				}
+			},
+			get waveSpeed() { return waveSpeed; },
+			set waveSpeed(newValue) {
+				waveSpeed = newValue;
+			},
+			get strength() { return strength; },
+			set strength(newValue) {
+				strength = newValue;
+				setEffectStrength(svg, strength, 0);
+			}
+		}
+	})();
 	let response = await fetch(chrome.extension.getURL("chromatic-aberration.svg"));
 	let svgFileContent = await response.text();
 	let svgContainer = document.createElement("div");
 	svgContainer.innerHTML = svgFileContent;
 	let svg = svgContainer.querySelector("svg");
 	document.body.appendChild(svgContainer);
-
+	await settings.load();
 	function applyWavy() {
 		document.body.classList.add("chromatic-aberration-wavy");
 		document.body.classList.remove("chromatic-aberration");
@@ -19,8 +68,6 @@ async function applyChromaticAberration() {
 		document.body.classList.remove("chromatic-aberration-wavy");
 		document.body.classList.remove("chromatic-aberration");
 	}
-
-	setEffectStrength(svg, settings.strength, 0);
 
 	let progress = {};
 	Array("r", "g", "b").forEach(key => progress[key] = createPingPongValue());
@@ -48,38 +95,9 @@ async function applyChromaticAberration() {
 		svg.setAttribute("width", "0");
 	}
 
-	let handlers = {
-		enabled(value) {
-			if(value) {
-				if(settings.wavy) {
-					applyWavy();
-				} else {
-					applyStatic();
-				}
-			} else {
-				removeEffect();
-			}
-		},
-		wavy(value) {
-			if(!settings.enabled) return;
-			if(value) {
-				applyWavy();
-			} else {
-				applyStatic();
-			}
-		},
-		waveSpeed(value) {
-
-		},
-		strength(value) {
-			setEffectStrength(svg, value, 0);
-		}
-	};
-
 	chrome.runtime.onMessage.addListener(msg => {
 		if(msg.command === "settingsChanged") {
 			settings[msg.setting] = msg.value;
-			handlers[msg.setting](msg.value);
 		}
 	});
 	window.requestAnimationFrame(loop);
