@@ -3,13 +3,15 @@ let rbStatic = document.getElementById("rbStatic");
 let rbWavy = document.getElementById("rbWavy");
 let rbAdditive = document.getElementById("rbAdditive");
 let rbSubtractive = document.getElementById("rbSubtractive");
-let inputStrength = document.getElementById("strength");
+let inputStrengthX = document.getElementById("strengthX");
+let inputStrengthY = document.getElementById("strengthY");
 let inputWaveSpeed = document.getElementById("waveSpeed");
 let inputWaveStrength = document.getElementById("waveStrength");
 
-chrome.storage.local.get(({ enabled, wavy, strength, waveSpeed, waveStrength, additive }) => {
+chrome.storage.local.get(({ enabled, wavy, strengthX, strengthY, waveSpeed, waveStrength, additive }) => {
     cbEnabled.checked = enabled;
-    inputStrength.value = strength;
+    inputStrengthX.value = strengthX;
+    inputStrengthY.value = strengthY;
     inputWaveSpeed.value = waveSpeed;
     inputWaveStrength.value = waveStrength;
     if(wavy) {
@@ -47,7 +49,8 @@ document.getElementById("rbSubtractive").addEventListener("input", ev => {
 });
 
 bindInput(cbEnabled, "enabled");
-bindInput(inputStrength, "strength");
+bindInput(inputStrengthX, "strengthX");
+bindInput(inputStrengthY, "strengthY");
 bindInput(inputWaveSpeed, "waveSpeed");
 bindInput(inputWaveStrength, "waveStrength");
 

@@ -17,8 +17,11 @@ async function applyChromaticAberration() {
 		wavy(value, settings) {
 			applyCorrectEffect(settings);
 		},
-		strength(value) {
-			setEffectStrength(value, 0);
+		strengthX(value, settings) {
+			setEffectStrength(value, settings.strengthY);
+		},
+		strengthY(value, settings) {
+			setEffectStrength(settings.strengthX, value);
 		},
 		additive(value, settings) {
 			applyCorrectEffect(settings);
@@ -106,10 +109,11 @@ function loadSettings(onChangeCallbacks) {
 	let privates = {
 		enabled: true,
 		wavy: false,
-		strength: 3,
+		additive: false,
+		strengthX: 3,
+		strengthY: 0,
 		waveSpeed: 50,
 		waveStrength: 5,
-		additive: false
 	};
 	let public = {};
 
@@ -153,54 +157,32 @@ async function initialize() {
 	svgContainer.innerHTML = svgFileContent;
 	let svg = svgContainer.querySelector("svg");
 	document.body.appendChild(svgContainer);
-	
-	
-	let turbuR = document.getElementById("chromaticAberrationTurbuR");
-	let turbuG = document.getElementById("chromaticAberrationTurbuG");
-	let turbuB = document.getElementById("chromaticAberrationTurbuB");
-	let turbuC = document.getElementById("chromaticAberrationTurbuC");
-	let turbuM = document.getElementById("chromaticAberrationTurbuM");
-	let turbuY = document.getElementById("chromaticAberrationTurbuY");
 
-	let displacementR = document.getElementById("chromaticAberrationDisplacementR");
-	let displacementG = document.getElementById("chromaticAberrationDisplacementG");
-	let displacementB = document.getElementById("chromaticAberrationDisplacementB");
-	let displacementC = document.getElementById("chromaticAberrationDisplacementC");
-	let displacementM = document.getElementById("chromaticAberrationDisplacementM");
-	let displacementY = document.getElementById("chromaticAberrationDisplacementY");
-	
-	let offsetRed = document.getElementById("chromaticAberrationOffsetRed");
-	let offsetGreen = document.getElementById("chromaticAberrationOffsetGreen");
-	let offsetBlue = document.getElementById("chromaticAberrationOffsetBlue");
-	let offsetCyan = document.getElementById("chromaticAberrationOffsetCyan");
-	let offsetMagenta = document.getElementById("chromaticAberrationOffsetMagenta");
-	let offsetYellow = document.getElementById("chromaticAberrationOffsetYellow");
-	
 	return {
 		svg,
 		turbu: {
-			r: turbuR,
-			g: turbuG,
-			b: turbuB,
-			c: turbuC,
-			m: turbuM,
-			y: turbuY
+			r: document.getElementById("chromaticAberrationTurbuR"),
+			g: document.getElementById("chromaticAberrationTurbuG"),
+			b: document.getElementById("chromaticAberrationTurbuB"),
+			c: document.getElementById("chromaticAberrationTurbuC"),
+			m: document.getElementById("chromaticAberrationTurbuM"),
+			y: document.getElementById("chromaticAberrationTurbuY")
 		},
 		displacement: {
-			r: displacementR,
-			g: displacementG,
-			b: displacementB,
-			c: displacementC,
-			m: displacementM,
-			y: displacementY
+			r: document.getElementById("chromaticAberrationDisplacementR"),
+			g: document.getElementById("chromaticAberrationDisplacementG"),
+			b: document.getElementById("chromaticAberrationDisplacementB"),
+			c: document.getElementById("chromaticAberrationDisplacementC"),
+			m: document.getElementById("chromaticAberrationDisplacementM"),
+			y: document.getElementById("chromaticAberrationDisplacementY")
 		},
 		offset: {
-			r: offsetRed,
-			g: offsetGreen,
-			b: offsetBlue,
-			c: offsetCyan,
-			m: offsetMagenta,
-			y: offsetYellow
+			r: document.getElementById("chromaticAberrationOffsetRed"),
+			g: document.getElementById("chromaticAberrationOffsetGreen"),
+			b: document.getElementById("chromaticAberrationOffsetBlue"),
+			c: document.getElementById("chromaticAberrationOffsetCyan"),
+			m: document.getElementById("chromaticAberrationOffsetMagenta"),
+			y: document.getElementById("chromaticAberrationOffsetYellow")
 		}
 	};
 }
