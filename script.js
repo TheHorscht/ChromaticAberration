@@ -33,9 +33,9 @@ async function applyChromaticAberration() {
 		elements.turbu.r.setAttribute("baseFrequency", 0.005 + Math.cos(progress.r.value() * Math.PI * 2) * 0.005);
 		elements.turbu.g.setAttribute("baseFrequency", 0.005 + Math.cos(progress.g.value() * Math.PI * 2) * 0.005);
 		elements.turbu.b.setAttribute("baseFrequency", 0.005 + Math.cos(progress.b.value() * Math.PI * 2) * 0.005);
-		elements.turbu.rs.setAttribute("baseFrequency", 0.005 + Math.cos(progress.r.value() * Math.PI * 2) * 0.005);
-		elements.turbu.gs.setAttribute("baseFrequency", 0.005 + Math.cos(progress.g.value() * Math.PI * 2) * 0.005);
-		elements.turbu.bs.setAttribute("baseFrequency", 0.005 + Math.cos(progress.b.value() * Math.PI * 2) * 0.005);
+		elements.turbu.c.setAttribute("baseFrequency", 0.005 + Math.cos(progress.r.value() * Math.PI * 2) * 0.005);
+		elements.turbu.m.setAttribute("baseFrequency", 0.005 + Math.cos(progress.g.value() * Math.PI * 2) * 0.005);
+		elements.turbu.y.setAttribute("baseFrequency", 0.005 + Math.cos(progress.b.value() * Math.PI * 2) * 0.005);
 		progress.r.advance(0.0000152 * settings.waveSpeed);
 		progress.g.advance(0.0000223 * settings.waveSpeed);
 		progress.b.advance(0.0000117 * settings.waveSpeed);
@@ -49,10 +49,10 @@ async function applyChromaticAberration() {
 		elements.offset.b.setAttribute("dx", -x);
 		elements.offset.b.setAttribute("dy", -y);
 
-		elements.offset.rs.setAttribute("dx", x);
-		elements.offset.rs.setAttribute("dy", y);
-		elements.offset.bs.setAttribute("dx", -x);
-		elements.offset.bs.setAttribute("dy", -y);
+		elements.offset.c.setAttribute("dx", x);
+		elements.offset.c.setAttribute("dy", y);
+		elements.offset.y.setAttribute("dx", -x);
+		elements.offset.y.setAttribute("dy", -y);
 
 		elements.svg.setAttribute("width", "0");
 	}
@@ -148,17 +148,17 @@ async function initialize() {
 	let turbuG = document.getElementById("turbuG");
 	let turbuB = document.getElementById("turbuB");
 
-	let turbuSubR = document.getElementById("turbuSubR");
-	let turbuSubG = document.getElementById("turbuSubG");
-	let turbuSubB = document.getElementById("turbuSubB");
+	let turbuC = document.getElementById("turbuC");
+	let turbuM = document.getElementById("turbuM");
+	let turbuY = document.getElementById("turbuY");
 	
 	let offsetRed = document.getElementById("chromatic-aberration-offset-red");
 	let offsetGreen = document.getElementById("chromatic-aberration-offset-green");
 	let offsetBlue = document.getElementById("chromatic-aberration-offset-blue");
 
-	let offsetRedSubtractive = document.getElementById("chromatic-aberration-subtractive-offset-red");
-	let offsetGreenSubtractive = document.getElementById("chromatic-aberration-subtractive-offset-green");
-	let offsetBlueSubtractive = document.getElementById("chromatic-aberration-subtractive-offset-blue");
+	let offsetCyan = document.getElementById("chromatic-aberration-subtractive-offset-cyan");
+	let offsetMagenta = document.getElementById("chromatic-aberration-subtractive-offset-magenta");
+	let offsetYellow = document.getElementById("chromatic-aberration-subtractive-offset-yellow");
 	
 	return {
 		svg,
@@ -166,17 +166,17 @@ async function initialize() {
 			r: turbuR,
 			g: turbuG,
 			b: turbuB,
-			rs: turbuSubR,
-			gs: turbuSubG,
-			bs: turbuSubB
+			c: turbuC,
+			m: turbuM,
+			y: turbuY
 		},
 		offset: {
 			r: offsetRed,
 			g: offsetGreen,
 			b: offsetBlue,
-			rs: offsetRedSubtractive,
-			gs: offsetGreenSubtractive,
-			bs: offsetBlueSubtractive
+			c: offsetCyan,
+			m: offsetMagenta,
+			y: offsetYellow
 		}
 	};
 }
