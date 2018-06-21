@@ -22,6 +22,9 @@ async function applyChromaticAberration() {
 		},
 		additive(value, settings) {
 			applyCorrectEffect(settings);
+		},
+		waveStrength(value) {
+			setWaveStrength(value);
 		}
 	};
 
@@ -30,17 +33,26 @@ async function applyChromaticAberration() {
 	Array("r", "g", "b").forEach(key => progress[key] = createPingPongValue());
 	
 	function loop() {
-		elements.turbu.r.setAttribute("baseFrequency", 0.005 + Math.cos(progress.r.value() * Math.PI * 2) * 0.005);
-		elements.turbu.g.setAttribute("baseFrequency", 0.005 + Math.cos(progress.g.value() * Math.PI * 2) * 0.005);
-		elements.turbu.b.setAttribute("baseFrequency", 0.005 + Math.cos(progress.b.value() * Math.PI * 2) * 0.005);
-		elements.turbu.c.setAttribute("baseFrequency", 0.005 + Math.cos(progress.r.value() * Math.PI * 2) * 0.005);
-		elements.turbu.m.setAttribute("baseFrequency", 0.005 + Math.cos(progress.g.value() * Math.PI * 2) * 0.005);
-		elements.turbu.y.setAttribute("baseFrequency", 0.005 + Math.cos(progress.b.value() * Math.PI * 2) * 0.005);
+		elements.turbu.r.setAttribute("baseFrequency", 0.008 + Math.cos(progress.r.value() * Math.PI * 2) * 0.004);
+		elements.turbu.g.setAttribute("baseFrequency", 0.008 + Math.cos(progress.g.value() * Math.PI * 2) * 0.004);
+		elements.turbu.b.setAttribute("baseFrequency", 0.008 + Math.cos(progress.b.value() * Math.PI * 2) * 0.004);
+		elements.turbu.c.setAttribute("baseFrequency", 0.008 + Math.cos(progress.r.value() * Math.PI * 2) * 0.004);
+		elements.turbu.m.setAttribute("baseFrequency", 0.008 + Math.cos(progress.g.value() * Math.PI * 2) * 0.004);
+		elements.turbu.y.setAttribute("baseFrequency", 0.008 + Math.cos(progress.b.value() * Math.PI * 2) * 0.004);
 		progress.r.advance(0.0000152 * settings.waveSpeed);
 		progress.g.advance(0.0000223 * settings.waveSpeed);
 		progress.b.advance(0.0000117 * settings.waveSpeed);
 		elements.svg.setAttribute("width", "0");
 		window.requestAnimationFrame(loop);
+	}
+
+	function setWaveStrength(value) {
+		elements.displacement.r.setAttribute("scale", value * 4);
+		elements.displacement.g.setAttribute("scale", value * 2);
+		elements.displacement.b.setAttribute("scale", value);
+		elements.displacement.c.setAttribute("scale", value * 4);
+		elements.displacement.m.setAttribute("scale", value * 2);
+		elements.displacement.y.setAttribute("scale", value);
 	}
 
 	function setEffectStrength(x, y) {
@@ -57,9 +69,7 @@ async function applyChromaticAberration() {
 		elements.svg.setAttribute("width", "0");
 	}
 
-	let settings = await loadSettings(onChangeCallbacks);
-	console.log(settings);
-	
+	let settings = await loadSettings(onChangeCallbacks);	
 	chrome.runtime.onMessage.addListener(msg => {
 		if(msg.command === "settingsChanged") {
 			settings[msg.setting] = msg.value;
@@ -98,7 +108,8 @@ function loadSettings(onChangeCallbacks) {
 		wavy: false,
 		strength: 3,
 		waveSpeed: 50,
-		additive: true
+		waveStrength: 5,
+		additive: false
 	};
 	let public = {};
 
@@ -147,15 +158,20 @@ async function initialize() {
 	let turbuR = document.getElementById("turbuR");
 	let turbuG = document.getElementById("turbuG");
 	let turbuB = document.getElementById("turbuB");
-
 	let turbuC = document.getElementById("turbuC");
 	let turbuM = document.getElementById("turbuM");
 	let turbuY = document.getElementById("turbuY");
+
+	let displacementR = document.getElementById("displacementR");
+	let displacementG = document.getElementById("displacementG");
+	let displacementB = document.getElementById("displacementB");
+	let displacementC = document.getElementById("displacementC");
+	let displacementM = document.getElementById("displacementM");
+	let displacementY = document.getElementById("displacementY");
 	
 	let offsetRed = document.getElementById("chromatic-aberration-offset-red");
 	let offsetGreen = document.getElementById("chromatic-aberration-offset-green");
 	let offsetBlue = document.getElementById("chromatic-aberration-offset-blue");
-
 	let offsetCyan = document.getElementById("chromatic-aberration-subtractive-offset-cyan");
 	let offsetMagenta = document.getElementById("chromatic-aberration-subtractive-offset-magenta");
 	let offsetYellow = document.getElementById("chromatic-aberration-subtractive-offset-yellow");
@@ -169,6 +185,14 @@ async function initialize() {
 			c: turbuC,
 			m: turbuM,
 			y: turbuY
+		},
+		displacement: {
+			r: displacementR,
+			g: displacementG,
+			b: displacementB,
+			c: displacementC,
+			m: displacementM,
+			y: displacementY
 		},
 		offset: {
 			r: offsetRed,

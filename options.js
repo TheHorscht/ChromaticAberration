@@ -5,11 +5,13 @@ let rbAdditive = document.getElementById("rbAdditive");
 let rbSubtractive = document.getElementById("rbSubtractive");
 let inputStrength = document.getElementById("strength");
 let inputWaveSpeed = document.getElementById("waveSpeed");
+let inputWaveStrength = document.getElementById("waveStrength");
 
-chrome.storage.local.get(({ enabled, wavy, strength, waveSpeed, additive }) => {
+chrome.storage.local.get(({ enabled, wavy, strength, waveSpeed, waveStrength, additive }) => {
     cbEnabled.checked = enabled;
     inputStrength.value = strength;
     inputWaveSpeed.value = waveSpeed;
+    inputWaveStrength.value = waveStrength;
     if(wavy) {
         rbWavy.checked = true;
         panelWavy.dataset["show"] = true;
@@ -47,6 +49,7 @@ document.getElementById("rbSubtractive").addEventListener("input", ev => {
 bindInput(cbEnabled, "enabled");
 bindInput(inputStrength, "strength");
 bindInput(inputWaveSpeed, "waveSpeed");
+bindInput(inputWaveStrength, "waveStrength");
 
 function bindInput(element, setting) {
     let valueProperty;

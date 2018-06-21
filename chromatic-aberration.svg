@@ -10,19 +10,19 @@
 			<feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0"
 				in="SourceGraphic"
 				result="blue" />
-			<feTurbulence id="turbuR" type="fractalNoise" baseFrequency="0.005" seed="1" numOctaves="1"
+			<feTurbulence id="turbuR" type="fractalNoise" baseFrequency="0.008" seed="1" numOctaves="1"
 				result="turbu1"/>
-			<feTurbulence id="turbuG" type="fractalNoise" baseFrequency="0.005" seed="2" numOctaves="1"
+			<feTurbulence id="turbuG" type="fractalNoise" baseFrequency="0.008" seed="2" numOctaves="1"
 				result="turbu2"/>
-			<feTurbulence id="turbuB" type="fractalNoise" baseFrequency="0.005" seed="3" numOctaves="1"
+			<feTurbulence id="turbuB" type="fractalNoise" baseFrequency="0.008" seed="3" numOctaves="1"
 				result="turbu3"/>
-			<feDisplacementMap scale="20" xChannelSelector="R" yChannelSelector="G"
+			<feDisplacementMap id="displacementR" scale="20" xChannelSelector="R" yChannelSelector="G"
 				in="red" in2="turbu1"
 				result="displaced1" />
-			<feDisplacementMap scale="10" xChannelSelector="R" yChannelSelector="G"
+			<feDisplacementMap id="displacementG" scale="10" xChannelSelector="R" yChannelSelector="G"
 				in="green" in2="turbu2"
 				result="displaced2" />
-			<feDisplacementMap scale="5" xChannelSelector="R" yChannelSelector="G"
+			<feDisplacementMap id="displacementB" scale="5" xChannelSelector="R" yChannelSelector="G"
 				in="blue" in2="turbu3"
 				result="displaced3"/>
 			<feBlend mode="screen"
@@ -42,19 +42,19 @@
 			<feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 1 0 0 0 0 0 1 0"
 				in="SourceGraphic"
 				result="yellow" />
-			<feTurbulence id="turbuC" type="fractalNoise" baseFrequency="0.005" seed="1" numOctaves="1"
+			<feTurbulence id="turbuC" type="fractalNoise" baseFrequency="0.008" seed="1" numOctaves="1"
 				result="turbu1"/>
-			<feTurbulence id="turbuM" type="fractalNoise" baseFrequency="0.005" seed="2" numOctaves="1"
+			<feTurbulence id="turbuM" type="fractalNoise" baseFrequency="0.008" seed="2" numOctaves="1"
 				result="turbu2"/>
-			<feTurbulence id="turbuY" type="fractalNoise" baseFrequency="0.005" seed="3" numOctaves="1"
+			<feTurbulence id="turbuY" type="fractalNoise" baseFrequency="0.008" seed="3" numOctaves="1"
 				result="turbu3"/>
-			<feDisplacementMap scale="20" xChannelSelector="R" yChannelSelector="G"
+			<feDisplacementMap id="displacementC" scale="20" xChannelSelector="R" yChannelSelector="G"
 				in="cyan" in2="turbu1"
 				result="displaced1" />
-			<feDisplacementMap scale="10" xChannelSelector="R" yChannelSelector="G"
+			<feDisplacementMap id="displacementM" scale="10" xChannelSelector="R" yChannelSelector="G"
 				in="magenta" in2="turbu2"
 				result="displaced2" />
-			<feDisplacementMap scale="5" xChannelSelector="R" yChannelSelector="G"
+			<feDisplacementMap id="displacementY" scale="5" xChannelSelector="R" yChannelSelector="G"
 				in="yellow" in2="turbu3"
 				result="displaced3" />
 			<feBlend mode="multiply"
