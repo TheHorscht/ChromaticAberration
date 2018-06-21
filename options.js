@@ -1,10 +1,12 @@
 let cbEnabled = document.getElementById("enabled");
 let rbStatic = document.getElementById("rbStatic");
 let rbWavy = document.getElementById("rbWavy");
+let rbAdditive = document.getElementById("rbAdditive");
+let rbSubtractive = document.getElementById("rbSubtractive");
 let inputStrength = document.getElementById("strength");
 let inputWaveSpeed = document.getElementById("waveSpeed");
 
-chrome.storage.local.get(({ enabled, wavy, strength, waveSpeed }) => {
+chrome.storage.local.get(({ enabled, wavy, strength, waveSpeed, additive }) => {
     cbEnabled.checked = enabled;
     inputStrength.value = strength;
     inputWaveSpeed.value = waveSpeed;
@@ -14,6 +16,11 @@ chrome.storage.local.get(({ enabled, wavy, strength, waveSpeed }) => {
     } else {
         rbStatic.checked = true;
         panelStatic.dataset["show"] = true;
+    }
+    if(additive) {
+        rbAdditive.checked = true;
+    } else {
+        rbSubtractive.checked = true;
     }
 });
 
@@ -28,6 +35,13 @@ document.getElementById("rbWavy").addEventListener("input", ev => {
     panelStatic.dataset["show"] = false;
     panelWavy.dataset["show"] = true;
     saveSetting("wavy", true);
+});
+
+document.getElementById("rbAdditive").addEventListener("input", ev => {
+    saveSetting("additive", true);
+});
+document.getElementById("rbSubtractive").addEventListener("input", ev => {
+    saveSetting("additive", false);
 });
 
 bindInput(cbEnabled, "enabled");
