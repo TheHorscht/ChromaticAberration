@@ -4,7 +4,7 @@ async function applyChromaticAberration() {
 			if(settings.wavy) {
 				applyWavy();
 			} else {
-				applyStatic();
+				applyStatic(settings.additive);
 			}
 		} else {
 			removeEffect();
@@ -19,6 +19,9 @@ async function applyChromaticAberration() {
 		},
 		strength(value) {
 			setEffectStrength(value, 0);
+		},
+		additive(value, settings) {
+			applyCorrectEffect(settings);
 		}
 	};
 
@@ -42,6 +45,12 @@ async function applyChromaticAberration() {
 		elements.offset.r.setAttribute("dy", y);
 		elements.offset.b.setAttribute("dx", -x);
 		elements.offset.b.setAttribute("dy", -y);
+
+		elements.offset.rs.setAttribute("dx", x);
+		elements.offset.rs.setAttribute("dy", y);
+		elements.offset.bs.setAttribute("dx", -x);
+		elements.offset.bs.setAttribute("dy", -y);
+
 		elements.svg.setAttribute("width", "0");
 	}
 
@@ -59,14 +68,20 @@ async function applyChromaticAberration() {
 function applyWavy() {
 	document.body.classList.add("chromatic-aberration-wavy");
 	document.body.classList.remove("chromatic-aberration");
+	document.body.classList.remove("chromatic-aberration-subtractive");
 }
-function applyStatic() {
-	document.body.classList.remove("chromatic-aberration-wavy");
-	document.body.classList.add("chromatic-aberration");
+function applyStatic(additive) {
+	removeEffect();
+	if(additive) {
+		document.body.classList.add("chromatic-aberration");
+	} else {
+		document.body.classList.add("chromatic-aberration-subtractive");
+	}
 }
 function removeEffect() {
 	document.body.classList.remove("chromatic-aberration-wavy");
 	document.body.classList.remove("chromatic-aberration");
+	document.body.classList.remove("chromatic-aberration-subtractive");
 }
 
 function loadSettings(onChangeCallbacks) {
@@ -75,7 +90,8 @@ function loadSettings(onChangeCallbacks) {
 		enabled: true,
 		wavy: false,
 		strength: 3,
-		waveSpeed: 50
+		waveSpeed: 50,
+		additive: true
 	};
 	let public = {};
 
@@ -128,6 +144,10 @@ async function initialize() {
 	let offsetRed = document.getElementById("chromatic-aberration-offset-red");
 	let offsetGreen = document.getElementById("chromatic-aberration-offset-green");
 	let offsetBlue = document.getElementById("chromatic-aberration-offset-blue");
+
+	let offsetRedSubtractive = document.getElementById("chromatic-aberration-subtractive-offset-red");
+	let offsetGreenSubtractive = document.getElementById("chromatic-aberration-subtractive-offset-green");
+	let offsetBlueSubtractive = document.getElementById("chromatic-aberration-subtractive-offset-blue");
 	
 	return {
 		svg,
@@ -140,6 +160,9 @@ async function initialize() {
 			r: offsetRed,
 			g: offsetGreen,
 			b: offsetBlue,
+			rs: offsetRedSubtractive,
+			gs: offsetGreenSubtractive,
+			bs: offsetBlueSubtractive
 		}
 	};
 }

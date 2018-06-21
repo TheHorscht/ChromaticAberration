@@ -41,15 +41,18 @@
         <feDisplacementMap in="blueShifted" in2="turbuB" result="displacedB"
                              scale="5" xChannelSelector="R" yChannelSelector="G" />
 		<feBlend
-			mode="lighten"
+			mode="screen"
 			in="displacedR"
 			in2="displacedG"
 			result="redAndGreenBlended" />
 		<feBlend
-			mode="lighten"
+			mode="screen"
 			in="displacedB"
 			in2="redAndGreenBlended" />
 		</filter>
+
+
+
 
 		<filter id="chromatic-aberration">
 		<feOffset
@@ -83,14 +86,61 @@
 			values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0"
 			result="blueShifted" />
 		<feBlend
-			mode="lighten"
+			mode="screen"
 			in="redShifted"
 			in2="greenShifted"
 			result="redAndGreenBlended" />
 		<feBlend
-			mode="lighten"
+			mode="screen"
 			in="blueShifted"
 			in2="redAndGreenBlended" />
 		</filter>
+
+
+
+
+
+
+		<filter id="chromatic-aberration-subtractive">
+		<feOffset
+			id="chromatic-aberration-subtractive-offset-red"
+			dx="-3"
+			dy="0"
+			in="SourceGraphic"
+			result="redChannel" />
+		<feOffset
+			id="chromatic-aberration-subtractive-offset-green"
+			dx="0"
+			dy="0"
+			in="SourceGraphic"
+			result="greenChannel" />
+		<feOffset
+			id="chromatic-aberration-subtractive-offset-blue"
+			dx="3"
+			dy="0"
+			in="SourceGraphic"
+			result="blueChannel" />
+		<feColorMatrix
+			in="redChannel"
+			values="1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
+			result="redShifted" />
+		<feColorMatrix
+			in="greenChannel"
+			values="0 0 0 0 1 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0"
+			result="greenShifted" />
+		<feColorMatrix
+			in="blueChannel"
+			values="0 0 0 0 1 0 0 0 0 1 0 0 1 0 0 0 0 0 1 0"
+			result="blueShifted" />
+		<feBlend
+			mode="multiply"
+			in="redShifted"
+			in2="greenShifted"
+			result="redAndGreenBlended" />
+		<feBlend
+			mode="multiply"
+			in="blueShifted"
+			in2="redAndGreenBlended" />
+    	</filter>
 	</defs>
 </svg>
