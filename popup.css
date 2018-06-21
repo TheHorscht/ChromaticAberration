@@ -1,0 +1,14 @@
+body {
+    font-family: "Trebuchet MS";
+}
+label {
+    display: block;
+}
+.panel[data-show="false"] {
+    display: none;
+}
+fieldset {
+    white-space: nowrap;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

@@ -3,6 +3,15 @@
   "version": "0.2.0",
   "manifest_version": 2,
   "description": "Makes everything look horrible or super cool (depends on your taste), by putting a chromatic aberration filter over every page. Also has a cool wobbly effect included as a bonus.",
+  "applications": {
+    "gecko": {
+      "id": "{d422c657-51ff-4980-8cf0-86ff2f2ee710}",
+      "strict_min_version": "50.0"
+    }
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],

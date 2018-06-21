@@ -1,10 +1,10 @@
 async function applyChromaticAberration() {
-	function applyCorrectEffect(settings) {
-		if(settings.enabled) {
-			if(settings.wavy) {
-				applyWavy(settings.additive);
+	function applyCorrectEffect(enabled, wavy, additive) {
+		if(enabled) {
+			if(wavy) {
+				applyWavy(additive);
 			} else {
-				applyStatic(settings.additive);
+				applyStatic(additive);
 			}
 		} else {
 			removeEffect();
@@ -12,10 +12,10 @@ async function applyChromaticAberration() {
 	}
 	let onChangeCallbacks = {
 		enabled(value, settings) {
-			applyCorrectEffect(settings);
+			applyCorrectEffect(settings.enabled, settings.wavy, settings.additive);
 		},
 		wavy(value, settings) {
-			applyCorrectEffect(settings);
+			applyCorrectEffect(settings.enabled, settings.wavy, settings.additive);
 		},
 		strengthX(value, settings) {
 			setEffectStrength(value, settings.strengthY);
@@ -24,7 +24,7 @@ async function applyChromaticAberration() {
 			setEffectStrength(settings.strengthX, value);
 		},
 		additive(value, settings) {
-			applyCorrectEffect(settings);
+			applyCorrectEffect(settings.enabled, settings.wavy, settings.additive);
 		},
 		waveStrength(value) {
 			setWaveStrength(value);
@@ -36,6 +36,7 @@ async function applyChromaticAberration() {
 	Array("r", "g", "b").forEach(key => progress[key] = createPingPongValue());
 	
 	function loop() {
+		let shit = settings.waveSpeed;
 		elements.turbu.r.setAttribute("baseFrequency", 0.008 + Math.cos(progress.r.value() * Math.PI * 2) * 0.004);
 		elements.turbu.g.setAttribute("baseFrequency", 0.008 + Math.cos(progress.g.value() * Math.PI * 2) * 0.004);
 		elements.turbu.b.setAttribute("baseFrequency", 0.008 + Math.cos(progress.b.value() * Math.PI * 2) * 0.004);
@@ -72,7 +73,10 @@ async function applyChromaticAberration() {
 		elements.svg.setAttribute("width", "0");
 	}
 
-	let settings = await loadSettings(onChangeCallbacks);	
+	let settings = await loadSettings(onChangeCallbacks);
+	applyCorrectEffect(settings.enabled, settings.wavy, settings.additive);
+	setWaveStrength(settings.waveStrength);
+	setEffectStrength(settings.strengthX, settings.strengthY);
 	chrome.runtime.onMessage.addListener(msg => {
 		if(msg.command === "settingsChanged") {
 			settings[msg.setting] = msg.value;
@@ -105,22 +109,11 @@ function removeEffect() {
 }
 
 function loadSettings(onChangeCallbacks) {
-	// Defaults
-	let privates = {
-		enabled: true,
-		wavy: false,
-		additive: false,
-		strengthX: 3,
-		strengthY: 0,
-		waveSpeed: 50,
-		waveStrength: 5,
-	};
+	let privates = {};
 	let public = {};
-
 	return new Promise(resolve => {
 		chrome.storage.local.get(storedSettings => {
 			for(let key in storedSettings) {
-				if(!(key in privates)) continue;
 				Object.defineProperty(public, key, {
 					get: () => privates[key],
 					set: value => {
@@ -130,7 +123,7 @@ function loadSettings(onChangeCallbacks) {
 						}
 					},
 				});
-				public[key] = storedSettings[key];
+				privates[key] = storedSettings[key];
 			}
 			resolve(public);
 		});

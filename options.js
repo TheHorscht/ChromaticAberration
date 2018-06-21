@@ -72,8 +72,12 @@ function bindInput(element, setting) {
 
 function saveSetting(setting, value) {
     chrome.storage.local.set({ [setting]: value });
+    console.log(chrome.runtime.lastError);
     console.log(`Setting '${setting}' to ${value}.`);
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        chrome.tabs.sendMessage(tabs[0].id, { command: "settingsChanged", setting, value });
+        console.log(tabs);
+        if(tabs.length > 0) {
+            chrome.tabs.sendMessage(tabs[0].id, { command: "settingsChanged", setting, value });
+        }
     });
 }
