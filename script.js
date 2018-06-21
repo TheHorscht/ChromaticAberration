@@ -1,47 +1,57 @@
 async function applyChromaticAberration() {
 	let settings = await getSettings();
-	if(!settings.enabled) {
-		return;
-	}
 	let response = await fetch(chrome.extension.getURL("chromatic-aberration.svg"));
 	let svgFileContent = await response.text();
 	let svgContainer = document.createElement("div");
 	svgContainer.innerHTML = svgFileContent;
+	let svg = svgContainer.querySelector("svg");
 	document.body.appendChild(svgContainer);
-	if(settings.wavy) {
-		document.body.style += ";filter:url(#chromatic-aberration-with-waves);";
-	} else {
-		let feOffsets = document.querySelectorAll("#chromatic-aberration feOffset");
-		feOffsets[0].setAttribute("dx", -settings.strength);
-		feOffsets[2].setAttribute("dx", settings.strength);
-		
-		document.body.style += ";filter:url(#chromatic-aberration);";
+
+	function applyWavy() {
+		document.body.classList.add("chromatic-aberration-wavy");
+		document.body.classList.remove("chromatic-aberration");
 	}
+	function applyStatic() {
+		document.body.classList.remove("chromatic-aberration-wavy");
+		document.body.classList.add("chromatic-aberration");
+	}
+	function removeEffect() {
+		document.body.classList.remove("chromatic-aberration-wavy");
+		document.body.classList.remove("chromatic-aberration");
+	}
+
+	function onEnabledChanged() {
+		if(settings.enabled) {
+			if(settings.wavy) {
+				applyWavy();
+			} else {
+				applyStatic();
+			}
+		} else {
+			removeEffect();
+		}
+	}
+
+	function onWavyChanged() {
+		if(!settings.enabled) return;
+		if(settings.wavy) {
+			applyWavy();
+		} else {
+			applyStatic();
+		}
+	}
+
+	setEffectStrength(svg, settings.strength, 0);
+	onEnabledChanged();
 
 	let progress = {
 		r: createPingPongValue(),
 		g: createPingPongValue(),
 		b: createPingPongValue()
 	}
-	let svg = document.getElementById("chromatic-aberration-effects");
-	let turbuR = document.querySelector("#turbuR");
-	let turbuG = document.querySelector("#turbuG");
-	let turbuB = document.querySelector("#turbuB");
-	function createPingPongValue() {
-		let value = 0;
-		let dir = 1;
-		return {
-			value() {
-				return value;
-			},
-			advance(t) {
-				value += t * dir;
-				if(value > 1 || value < 0) {
-					dir *= -1;
-				}
-			}
-		};
-	}
+	let turbuR = document.getElementById("turbuR");
+	let turbuG = document.getElementById("turbuG");
+	let turbuB = document.getElementById("turbuB");
 	function loop() {
 		turbuR.setAttribute("baseFrequency", 0.005 + Math.cos(progress.r.value() * Math.PI * 2) * 0.005);
 		turbuG.setAttribute("baseFrequency", 0.005 + Math.cos(progress.g.value() * Math.PI * 2) * 0.005);
@@ -54,10 +64,8 @@ async function applyChromaticAberration() {
 	}
 
 	function setEffectStrength(svg, x, y) {
-		console.log(svg);
-		
-		let offsetRed = svg.getElementById("chromatic-aberration-offset-red");
-		let offsetBlue = svg.getElementById("chromatic-aberration-offset-blue");
+		let offsetRed = document.getElementById("chromatic-aberration-offset-red");
+		let offsetBlue = document.getElementById("chromatic-aberration-offset-blue");
 		offsetRed.setAttribute("dx", x);
 		offsetRed.setAttribute("dy", y);
 		offsetBlue.setAttribute("dx", -x);
@@ -72,16 +80,11 @@ async function applyChromaticAberration() {
 			} else if(msg.setting === "waveSpeed") {
 				settings.waveSpeed = msg.value;
 			} else if(msg.setting === "enabled") {
-				let feOffsets = document.querySelectorAll("#chromatic-aberration feOffset");
-				let svg = svgContainer.querySelector("svg");
-				console.log(msg, feOffsets, svg);
-				if(msg.value === true) {
-					setEffectStrength(svg, settings.strength, 0);
-				} else {
-					setEffectStrength(svg, 0, 0);
-				}
+				settings.enabled = msg.value;
+				onEnabledChanged();
 			} else if(msg.setting === "wavy") {
-				settings.waveSpeed = msg.value;
+				settings.wavy = msg.value;
+				onWavyChanged();
 			}
 		}
 	});
@@ -96,4 +99,17 @@ function getSettings() {
 			resolve({ enabled, wavy, strength, waveSpeed });
 		});
 	});
+}
+
+function createPingPongValue() {
+	let value = 0, dir = 1;
+	return {
+		value: () => value,
+		advance(t) {
+			value += t * dir;
+			if(value > 1 || value < 0) {
+				dir *= -1;
+			}
+		}
+	};
 }

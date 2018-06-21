@@ -1,6 +1,6 @@
-<svg id="chromatic-aberration-effects" xmlns="http://www.w3.org/2000/svg">
+<svg id="chromatic-aberration-effects" width="0" xmlns="http://www.w3.org/2000/svg">
 	<defs>
-		<filter id="chromatic-aberration-with-waves">
+		<filter id="chromatic-aberration-wavy">
 		<feOffset
 			dx="-1"
 			dy="0"
