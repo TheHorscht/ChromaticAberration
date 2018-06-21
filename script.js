@@ -20,35 +20,10 @@ async function applyChromaticAberration() {
 		document.body.classList.remove("chromatic-aberration");
 	}
 
-	function onEnabledChanged() {
-		if(settings.enabled) {
-			if(settings.wavy) {
-				applyWavy();
-			} else {
-				applyStatic();
-			}
-		} else {
-			removeEffect();
-		}
-	}
-
-	function onWavyChanged() {
-		if(!settings.enabled) return;
-		if(settings.wavy) {
-			applyWavy();
-		} else {
-			applyStatic();
-		}
-	}
-
 	setEffectStrength(svg, settings.strength, 0);
-	onEnabledChanged();
 
-	let progress = {
-		r: createPingPongValue(),
-		g: createPingPongValue(),
-		b: createPingPongValue()
-	}
+	let progress = {};
+	Array("r", "g", "b").forEach(key => progress[key] = createPingPongValue());
 	let turbuR = document.getElementById("turbuR");
 	let turbuG = document.getElementById("turbuG");
 	let turbuB = document.getElementById("turbuB");
@@ -73,19 +48,38 @@ async function applyChromaticAberration() {
 		svg.setAttribute("width", "0");
 	}
 
+	let handlers = {
+		enabled(value) {
+			if(value) {
+				if(settings.wavy) {
+					applyWavy();
+				} else {
+					applyStatic();
+				}
+			} else {
+				removeEffect();
+			}
+		},
+		wavy(value) {
+			if(!settings.enabled) return;
+			if(value) {
+				applyWavy();
+			} else {
+				applyStatic();
+			}
+		},
+		waveSpeed(value) {
+
+		},
+		strength(value) {
+			setEffectStrength(svg, value, 0);
+		}
+	};
+
 	chrome.runtime.onMessage.addListener(msg => {
 		if(msg.command === "settingsChanged") {
-			if(msg.setting === "strength") {
-				setEffectStrength(svg, msg.value, 0);
-			} else if(msg.setting === "waveSpeed") {
-				settings.waveSpeed = msg.value;
-			} else if(msg.setting === "enabled") {
-				settings.enabled = msg.value;
-				onEnabledChanged();
-			} else if(msg.setting === "wavy") {
-				settings.wavy = msg.value;
-				onWavyChanged();
-			}
+			settings[msg.setting] = msg.value;
+			handlers[msg.setting](msg.value);
 		}
 	});
 	window.requestAnimationFrame(loop);
