@@ -32,9 +32,6 @@
 				in="displaced3" in2="1and2Blended" />
 		</filter>
 
-
-
-
 		<filter id="chromatic-aberration-wavy-subtractive">
 			<feColorMatrix values="1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
 				in="SourceGraphic"
@@ -67,9 +64,6 @@
 				in="1and2Blended" in2="displaced3" />
 		</filter>
 
-
-
-
 		<filter id="chromatic-aberration">
 			<feOffset id="chromatic-aberration-offset-red" dx="-3" dy="0"
 				in="SourceGraphic"
@@ -95,11 +89,6 @@
 			<feBlend mode="screen"
 				in="offsetBlue" in2="redAndGreenBlended" />
 		</filter>
-
-
-
-
-
 
 		<filter id="chromatic-aberration-subtractive">
 			<feOffset id="chromatic-aberration-subtractive-offset-cyan" dx="-3" dy="0"
