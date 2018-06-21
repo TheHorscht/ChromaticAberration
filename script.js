@@ -81,24 +81,24 @@ async function applyChromaticAberration() {
 function applyWavy(additive) {
 	removeEffect();
 	if(additive) {
-		document.body.classList.add("chromatic-aberration-wavy");		
+		document.body.classList.add("chromatic-aberration-filter-wavy");		
 	} else {
-		document.body.classList.add("chromatic-aberration-wavy-subtractive");
+		document.body.classList.add("chromatic-aberration-filter-wavy-subtractive");
 	}
 }
 function applyStatic(additive) {
 	removeEffect();
 	if(additive) {
-		document.body.classList.add("chromatic-aberration");
+		document.body.classList.add("chromatic-aberration-filter");
 	} else {
-		document.body.classList.add("chromatic-aberration-subtractive");
+		document.body.classList.add("chromatic-aberration-filter-subtractive");
 	}
 }
 function removeEffect() {
-	document.body.classList.remove("chromatic-aberration-wavy");
-	document.body.classList.remove("chromatic-aberration-wavy-subtractive");
-	document.body.classList.remove("chromatic-aberration");
-	document.body.classList.remove("chromatic-aberration-subtractive");
+	document.body.classList.remove("chromatic-aberration-filter-wavy");
+	document.body.classList.remove("chromatic-aberration-filter-wavy-subtractive");
+	document.body.classList.remove("chromatic-aberration-filter");
+	document.body.classList.remove("chromatic-aberration-filter-subtractive");
 }
 
 function loadSettings(onChangeCallbacks) {
@@ -155,26 +155,26 @@ async function initialize() {
 	document.body.appendChild(svgContainer);
 	
 	
-	let turbuR = document.getElementById("turbuR");
-	let turbuG = document.getElementById("turbuG");
-	let turbuB = document.getElementById("turbuB");
-	let turbuC = document.getElementById("turbuC");
-	let turbuM = document.getElementById("turbuM");
-	let turbuY = document.getElementById("turbuY");
+	let turbuR = document.getElementById("chromaticAberrationTurbuR");
+	let turbuG = document.getElementById("chromaticAberrationTurbuG");
+	let turbuB = document.getElementById("chromaticAberrationTurbuB");
+	let turbuC = document.getElementById("chromaticAberrationTurbuC");
+	let turbuM = document.getElementById("chromaticAberrationTurbuM");
+	let turbuY = document.getElementById("chromaticAberrationTurbuY");
 
-	let displacementR = document.getElementById("displacementR");
-	let displacementG = document.getElementById("displacementG");
-	let displacementB = document.getElementById("displacementB");
-	let displacementC = document.getElementById("displacementC");
-	let displacementM = document.getElementById("displacementM");
-	let displacementY = document.getElementById("displacementY");
+	let displacementR = document.getElementById("chromaticAberrationDisplacementR");
+	let displacementG = document.getElementById("chromaticAberrationDisplacementG");
+	let displacementB = document.getElementById("chromaticAberrationDisplacementB");
+	let displacementC = document.getElementById("chromaticAberrationDisplacementC");
+	let displacementM = document.getElementById("chromaticAberrationDisplacementM");
+	let displacementY = document.getElementById("chromaticAberrationDisplacementY");
 	
-	let offsetRed = document.getElementById("chromatic-aberration-offset-red");
-	let offsetGreen = document.getElementById("chromatic-aberration-offset-green");
-	let offsetBlue = document.getElementById("chromatic-aberration-offset-blue");
-	let offsetCyan = document.getElementById("chromatic-aberration-subtractive-offset-cyan");
-	let offsetMagenta = document.getElementById("chromatic-aberration-subtractive-offset-magenta");
-	let offsetYellow = document.getElementById("chromatic-aberration-subtractive-offset-yellow");
+	let offsetRed = document.getElementById("chromaticAberrationOffsetRed");
+	let offsetGreen = document.getElementById("chromaticAberrationOffsetGreen");
+	let offsetBlue = document.getElementById("chromaticAberrationOffsetBlue");
+	let offsetCyan = document.getElementById("chromaticAberrationOffsetCyan");
+	let offsetMagenta = document.getElementById("chromaticAberrationOffsetMagenta");
+	let offsetYellow = document.getElementById("chromaticAberrationOffsetYellow");
 	
 	return {
 		svg,

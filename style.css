@@ -1,12 +1,12 @@
-body.chromatic-aberration {
-    filter: url(#chromatic-aberration);
+body.chromatic-aberration-filter {
+    filter: url(#chromaticAberrationFilter);
 }
-body.chromatic-aberration-subtractive {
-    filter: url(#chromatic-aberration-subtractive);
+body.chromatic-aberration-filter-subtractive {
+    filter: url(#chromaticAberrationFilterSubtractive);
 }
-body.chromatic-aberration-wavy {
-    filter: url(#chromatic-aberration-wavy);
+body.chromatic-aberration-filter-wavy {
+    filter: url(#chromaticAberrationFilterWavy);
 }
-body.chromatic-aberration-wavy-subtractive {
-    filter: url(#chromatic-aberration-wavy-subtractive);
+body.chromatic-aberration-filter-wavy-subtractive {
+    filter: url(#chromaticAberrationFilterWavySubtractive);
 }
