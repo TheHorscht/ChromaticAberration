@@ -2,7 +2,7 @@
   "name": "ChromaticAberration",
   "version": "0.1.0",
   "manifest_version": 2,
-  "description": "Makes everything look like a modern AAA game.",
+  "description": "Makes everything look like a modern AAA game or alternatively has a cool LSD effect!",
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
