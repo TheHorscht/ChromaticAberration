@@ -1,21 +1,22 @@
 async function applyChromaticAberration() {
-	function applyCorrectEffect(enabled, wavy, additive) {
-		if(enabled) {
-			if(wavy) {
-				applyWavy(additive);
+	function updateBodyStyle(settings) {
+		/* document.body.classList.remove("chromaticAberrationFilterStatic");
+		document.body.classList.remove("chromaticAberrationFilterWavy"); */
+		document.body.style.filter = "";
+		if(settings.enabled) {
+			if(settings.wavy) {
+				document.body.style.filter = "url(#chromaticAberrationFilterWavy)";
 			} else {
-				applyStatic(additive);
+				document.body.style.filter = "url(#chromaticAberrationFilterStatic)";
 			}
-		} else {
-			removeEffect();
 		}
 	}
 	let onChangeCallbacks = {
 		enabled(value, settings) {
-			applyCorrectEffect(settings.enabled, settings.wavy, settings.additive);
+			updateBodyStyle(settings);
 		},
 		wavy(value, settings) {
-			applyCorrectEffect(settings.enabled, settings.wavy, settings.additive);
+			updateBodyStyle(settings);
 		},
 		strengthX(value, settings) {
 			setEffectStrength(value, settings.strengthY);
@@ -24,17 +25,17 @@ async function applyChromaticAberration() {
 			setEffectStrength(settings.strengthX, value);
 		},
 		additive(value, settings) {
-			applyCorrectEffect(settings.enabled, settings.wavy, settings.additive);
+			effect.setMode(value ? "rgb" : "cmy");
 		},
 		waveStrength(value) {
 			setWaveStrength(value);
 		}
 	};
 
-	let effect = await initialize();
+	let effect = createEffect();
 	let progress = [5, 7, 4].map(v => {
 		let pingpong = createPingPongValue();
-		return v2 => 0.008 + Math.cos(pingpong(v2 * v * 0.0005) * Math.PI * 2) * 0.004;
+		return v2 => 0.02 + Math.cos(pingpong(v2 * v * 0.0008) * Math.PI * 2) * 0.01;
 	});
 	let lastFrameTime = Date.now();
 	
@@ -48,8 +49,8 @@ async function applyChromaticAberration() {
 	}
 
 	function setWaveStrength(value) {
-		effect.displacement.scale1 = value * 4;
-		effect.displacement.scale2 = value * 2;
+		effect.displacement.scale1 = value;
+		effect.displacement.scale2 = value;
 		effect.displacement.scale3 = value;
 		effect.update();
 	}
@@ -63,7 +64,7 @@ async function applyChromaticAberration() {
 	}
 
 	let settings = await loadSettings(onChangeCallbacks);
-	applyCorrectEffect(settings.enabled, settings.wavy, settings.additive);
+	updateBodyStyle(settings);
 	setWaveStrength(settings.waveStrength);
 	setEffectStrength(settings.strengthX, settings.strengthY);
 	chrome.runtime.onMessage.addListener(msg => {
@@ -72,29 +73,6 @@ async function applyChromaticAberration() {
 		}
 	});
 	window.requestAnimationFrame(loop);
-}
-
-function applyWavy(additive) {
-	removeEffect();
-	if(additive) {
-		document.body.classList.add("chromatic-aberration-filter-wavy");		
-	} else {
-		document.body.classList.add("chromatic-aberration-filter-wavy-subtractive");
-	}
-}
-function applyStatic(additive) {
-	removeEffect();
-	if(additive) {
-		document.body.classList.add("chromatic-aberration-filter");
-	} else {
-		document.body.classList.add("chromatic-aberration-filter-subtractive");
-	}
-}
-function removeEffect() {
-	document.body.classList.remove("chromatic-aberration-filter-wavy");
-	document.body.classList.remove("chromatic-aberration-filter-wavy-subtractive");
-	document.body.classList.remove("chromatic-aberration-filter");
-	document.body.classList.remove("chromatic-aberration-filter-subtractive");
 }
 
 function loadSettings(onChangeCallbacks) {
@@ -136,14 +114,14 @@ function createPingPongValue() {
 	}	
 }
 
-async function initialize() {
+function createEffect() {
 	let svg = d3.select("body").append("svg")
 			    .attr("xmlns", "http://www.w3.org/2000/svg")
 			    .attr("width", "0")
 			    .attr("height", "0")
 	let defs = svg.append("defs");
 	// Static Filter
-	let filterStatic = defs.append("filter").attr("id", "filterStatic");
+	let filterStatic = defs.append("filter").attr("id", "chromaticAberrationFilterStatic");
 	let staticOffsets = Array(3).fill().map(() => filterStatic.append("feOffset"));
 	staticOffsets.forEach((el, i) => {
 		el.attr("dx", 0)
@@ -165,15 +143,17 @@ async function initialize() {
 		  .attr("in", `offset${i}`)
 		  .attr("result", `separated${i}`)
 	});
-	filterStatic.append("feBlend")
+	let staticBlend1 = filterStatic.append("feBlend")
+		.attr("mode", "screen")
 		.attr("in", "separated0")
 		.attr("in2", "separated1")
 		.attr("result", "blendOne");
-	filterStatic.append("feBlend")
+	let staticBlend2 = filterStatic.append("feBlend")
+		.attr("mode", "screen")
 		.attr("in", "blendOne")
 		.attr("in2", "separated2");
 	// Wobbly Filter
-	let filterWobbly = defs.append("filter").attr("id", "filterWobbly");
+	let filterWobbly = defs.append("filter").attr("id", "chromaticAberrationFilterWavy");
 	let wobblyColorMatrices = Array(3).fill().map(() => filterWobbly.append("feColorMatrix"));
 	wobblyColorMatrices.forEach((el, i) => {
 		el.attr("values", matrices.rgb[i])
@@ -185,23 +165,25 @@ async function initialize() {
 		el.attr("type", "fractalNoise") // turbulence or fractalNoise
 		  .attr("baseFrequency", "0.008")
 		  .attr("seed", i)
-		  .attr("numOctaves", "4")
+		  .attr("numOctaves", 1)
 		  .attr("result", `turbu${i}`)
 	});
 	let dislpacementMaps = Array(3).fill().map(() => filterWobbly.append("feDisplacementMap"));
 	dislpacementMaps.forEach((el, i) => {
-		el.attr("scale", 5 + i * 5)
-		.attr("xChannelSelector", "R")
-		.attr("yChannelSelector", "G")
+		el.attr("scale", 1)
+		  .attr("xChannelSelector", "R")
+		  .attr("yChannelSelector", "G")
 		  .attr("in", `separated${i}`)
 		  .attr("in2", `turbu${i}`)
 		  .attr("result", `displaced${i}`)
 	});
-	filterWobbly.append("feBlend")
+	let wobblyBlend1 = filterWobbly.append("feBlend")
+		.attr("mode", "screen")
 		.attr("in", "displaced0")
 		.attr("in2", "displaced1")
 		.attr("result", "blendOne");
-	filterWobbly.append("feBlend")
+	let wobblyBlend2 = filterWobbly.append("feBlend")
+		.attr("mode", "screen")
 		.attr("in", "blendOne")
 		.attr("in2", "displaced2");
 
@@ -209,6 +191,24 @@ async function initialize() {
 		offset: {},
 		turbu: { freq1: 0, freq2: 0, freq3: 0 },
 		displacement: { scale1: 0, scale2: 0, scale3: 0 },
+		setMode(mode) {
+			if(!(mode === "rgb" || mode === "cmy")) {
+				throw new Error("Argument 'mode' must be one of 'rgb' or 'cmy'");
+			}
+			let matrix = mode === "rgb" ? matrices.rgb : matrices.cmy;
+			let blendMode = mode === "rgb" ? "screen" : "multiply";
+			staticColorMatrices.forEach((el, i) => {
+				el.attr("values", matrix[i])
+			});
+			wobblyColorMatrices.forEach((el, i) => {
+				el.attr("values", matrix[i])
+			});
+			staticBlend1.attr("mode", blendMode);
+			staticBlend2.attr("mode", blendMode);
+			wobblyBlend1.attr("mode", blendMode);
+			wobblyBlend2.attr("mode", blendMode);
+			this.update();
+		},
 		update: () => svg.attr("width", 0)
 	};
 

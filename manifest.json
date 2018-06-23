@@ -15,7 +15,6 @@
   "content_scripts": [
     {
       "matches": ["file://*/*"],
-      "css": ["style.css"],
       "js": ["d3-selection.min.js", "script.js"]
     }
   ],
