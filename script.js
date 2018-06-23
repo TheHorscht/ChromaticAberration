@@ -32,42 +32,29 @@ async function applyChromaticAberration() {
 	};
 
 	let effect = await initialize();
-	let progress = {};
-	Array("r", "g", "b").forEach(key => progress[key] = createPingPongValue());
+	let progress = Array(3).fill().map(() => createPingPongValue());
 	
 	function loop() {
-		let shit = settings.waveSpeed;
-		effect.turbu.freq1 = 0.008 + Math.cos(progress.r.value() * Math.PI * 2) * 0.004;
-		effect.turbu.freq2 = 0.008 + Math.cos(progress.g.value() * Math.PI * 2) * 0.004;
-		effect.turbu.freq3 = 0.008 + Math.cos(progress.b.value() * Math.PI * 2) * 0.004;
-		progress.r.advance(0.0000152 * settings.waveSpeed);
-		progress.g.advance(0.0000223 * settings.waveSpeed);
-		progress.b.advance(0.0000117 * settings.waveSpeed);
-		elements.svg.setAttribute("width", "0");
+		effect.turbu.freq1 = 0.008 + Math.cos(progress[0](0.0000152 * settings.waveSpeed) * Math.PI * 2) * 0.004;
+		effect.turbu.freq2 = 0.008 + Math.cos(progress[1](0.0000223 * settings.waveSpeed) * Math.PI * 2) * 0.004;
+		effect.turbu.freq3 = 0.008 + Math.cos(progress[2](0.0000117 * settings.waveSpeed) * Math.PI * 2) * 0.004;
+		effect.update();
 		window.requestAnimationFrame(loop);
 	}
 
 	function setWaveStrength(value) {
-		elements.displacement.r.setAttribute("scale", value * 4);
-		elements.displacement.g.setAttribute("scale", value * 2);
-		elements.displacement.b.setAttribute("scale", value);
-		elements.displacement.c.setAttribute("scale", value * 4);
-		elements.displacement.m.setAttribute("scale", value * 2);
-		elements.displacement.y.setAttribute("scale", value);
+		effect.displacement.scale1 = value * 4;
+		effect.displacement.scale2 = value * 2;
+		effect.displacement.scale3 = value;
+		effect.update();
 	}
 
 	function setEffectStrength(x, y) {
-		elements.offset.r.setAttribute("dx", x);
-		elements.offset.r.setAttribute("dy", y);
-		elements.offset.b.setAttribute("dx", -x);
-		elements.offset.b.setAttribute("dy", -y);
-
-		elements.offset.c.setAttribute("dx", x);
-		elements.offset.c.setAttribute("dy", y);
-		elements.offset.y.setAttribute("dx", -x);
-		elements.offset.y.setAttribute("dy", -y);
-
-		elements.svg.setAttribute("width", "0");
+		effect.offset.x1 = x;
+		effect.offset.y1 = y;
+		effect.offset.x3 = -x;
+		effect.offset.y3 = -y;
+		effect.update();
 	}
 
 	let settings = await loadSettings(onChangeCallbacks);
@@ -129,23 +116,19 @@ function loadSettings(onChangeCallbacks) {
 
 function createPingPongValue() {
 	let value = 0;
-	return Object.defineProperties({}, {
-		value: {
-			get: () => value < 0.5
-					   ? value * 2
-					   : 1 - ((value - 0.5) * 2),
-		},
-		advance: {
-			value: v => {
-				value += v * 0.5;
-				if(value > 1) {
-					value %= 1;
-				} else if (value < 0) {
-					value = 1 + (value % 1);
-				}
+	return v => {
+		if(typeof v === "number") {
+			value += v * 0.5;
+			if(value > 1) {
+				value %= 1;
+			} else if (value < 0) {
+				value = 1 + (value % 1);
 			}
 		}
-	});
+		return value < 0.5
+		       ? value * 2
+			   : 1 - ((value - 0.5) * 2);
+	}	
 }
 
 async function initialize() {
@@ -154,10 +137,11 @@ async function initialize() {
 			    .attr("width", "0")
 			    .attr("height", "0")
 	let defs = svg.append("defs");
+	// Static Filter
 	let filterStatic = defs.append("filter").attr("id", "filterStatic");
 	let staticOffsets = Array(3).fill().map(() => filterStatic.append("feOffset"));
 	staticOffsets.forEach((el, i) => {
-		el.attr("dx", 5 * i)
+		el.attr("dx", 0)
 		  .attr("dy", 0)
 		  .attr("in", "SourceGraphic")
 		  .attr("result", `offset${i}`)
@@ -183,13 +167,46 @@ async function initialize() {
 	filterStatic.append("feBlend")
 		.attr("in", "blendOne")
 		.attr("in2", "separated2");
+	// Wobbly Filter
+	let filterWobbly = defs.append("filter").attr("id", "filterWobbly");
+	let wobblyColorMatrices = Array(3).fill().map(() => filterWobbly.append("feColorMatrix"));
+	wobblyColorMatrices.forEach((el, i) => {
+		el.attr("values", matrices.rgb[i])
+		  .attr("in", "SourceGraphic")
+		  .attr("result", `separated${i}`)
+	});
+	let turbulences = Array(3).fill().map(() => filterWobbly.append("feTurbulence"));
+	turbulences.forEach((el, i) => {
+		el.attr("type", "fractalNoise") // turbulence or fractalNoise
+		  .attr("baseFrequency", "0.008")
+		  .attr("seed", i)
+		  .attr("numOctaves", "4")
+		  .attr("result", `turbu${i}`)
+	});
+	let dislpacementMaps = Array(3).fill().map(() => filterWobbly.append("feDisplacementMap"));
+	dislpacementMaps.forEach((el, i) => {
+		el.attr("scale", 5 + i * 5)
+		.attr("xChannelSelector", "R")
+		.attr("yChannelSelector", "G")
+		  .attr("in", `separated${i}`)
+		  .attr("in2", `turbu${i}`)
+		  .attr("result", `displaced${i}`)
+	});
+	filterWobbly.append("feBlend")
+		.attr("in", "displaced0")
+		.attr("in2", "displaced1")
+		.attr("result", "blendOne");
+	filterWobbly.append("feBlend")
+		.attr("in", "blendOne")
+		.attr("in2", "displaced2");
 
 	let effect = {
 		offset: {},
 		turbu: { freq1: 0, freq2: 0, freq3: 0 },
 		displacement: { scale1: 0, scale2: 0, scale3: 0 },
+		update: () => svg.attr("width", 0)
 	};
-	// ( ͡° ͜ʖ ͡°) Impressed?
+
 	let attrFn = d3.select().__proto__.attr;
 	let createAccessors = (el, attr) => {
 		let ttr = attrFn.bind(el, attr);
@@ -203,15 +220,16 @@ async function initialize() {
 		y2: createAccessors(staticOffsets[1], "dy"),
 		y3: createAccessors(staticOffsets[2], "dy"),
 	});
-/* 	Object.defineProperties(effect.turbu, {
-		x1: createAccessors(staticOffsets[0], "baseFrequency"),
-		x2: createAccessors(staticOffsets[1], "baseFrequency"),
-		x3: createAccessors(staticOffsets[2], "baseFrequency"),
-	}); */
-	// Dont forget to set dx etc
-/* 	effect.offset.c1x = 0;
-	effect.offset.c1x = 0;
-	effect.offset.c1x = 0; */
+	Object.defineProperties(effect.turbu, {
+		freq1: createAccessors(turbulences[0], "baseFrequency"),
+		freq2: createAccessors(turbulences[1], "baseFrequency"),
+		freq3: createAccessors(turbulences[2], "baseFrequency"),
+	});
+	Object.defineProperties(effect.displacement, {
+		scale1: createAccessors(dislpacementMaps[0], "scale"),
+		scale2: createAccessors(dislpacementMaps[1], "scale"),
+		scale3: createAccessors(dislpacementMaps[2], "scale"),
+	});
 
 	return effect;
 }
