@@ -144,12 +144,53 @@ function createPingPongValue() {
 }
 
 async function initialize() {
-	let response = await fetch(chrome.extension.getURL("chromatic-aberration.svg"));
-	let svgFileContent = await response.text();
-	let svgContainer = document.createElement("div");
-	svgContainer.innerHTML = svgFileContent;
-	let svg = svgContainer.querySelector("svg");
-	document.body.appendChild(svgContainer);
+	let svg, defs;
+	let namespace = 'http://www.w3.org/2000/svg';
+
+	svg = d3.select('body').append('svg')
+			.attr("xmlns", "namespace")
+			.attr("width", "0")
+			.attr("height", "0")
+	defs = svg.append('defs');
+	let filterStatic = u('<filter>').attr("id", "filterStatic");
+	let staticOffsets = Array(3).fill().map(() => u(document.createElementNS(namespace, "feOffset")));
+	staticOffsets.forEach((el, i) => el.attr({
+		dx: 5* i, dy: 0,
+		in: "SourceGraphic", result: `offset${i}` }));
+	filterStatic.append(_ => _, staticOffsets);
+	let staticColorMatrices = Array(3).fill().map(() => u(document.createElementNS(namespace, "feColorMatrix")));
+	let matrices = ["1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0", "0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0", "0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0"];
+	staticColorMatrices.forEach((el, i) => el.attr({
+		values: matrices[i],
+		in: `offset${i}`, result: `separated${i}` }));
+	filterStatic.append(_ => _, staticColorMatrices);
+	let blendOne = u(document.createElementNS(namespace, "feBlend")).attr({
+		in: "separated0", in2: "separated1",
+		result: "blendOne" });
+	let blendTwo = u(document.createElementNS(namespace, "feBlend")).attr({ in: "blendOne", in2: "separated2" });
+	filterStatic.append(blendOne);
+	filterStatic.append(blendTwo);
+	defs.append(filterStatic);
+
+	let result = {
+		turbu: {},
+		offset: {},
+	};
+	// ( ͡° ͜ʖ ͡°) Impressed?
+	let proto = u().__proto__;
+	let createAccessors = (el, attr) => {
+		let umbrellaAttr = proto.attr.bind(el, attr);
+		return { get: umbrellaAttr, set: umbrellaAttr };
+	};
+	Object.defineProperties(result.offset, {
+		c1x: createAccessors(staticOffsets[0], "dx"),
+		c2x: createAccessors(staticOffsets[1], "dx"),
+		c3x: createAccessors(staticOffsets[2], "dx")
+	});
+	// Dont forget to set dx etc
+/* 	result.offset.c1x = 0;
+	result.offset.c1x = 0;
+	result.offset.c1x = 0; */
 
 	return {
 		svg,

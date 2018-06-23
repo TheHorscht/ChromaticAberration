@@ -1,5 +1,6 @@
+@import 'range.css';
 body {
-    font-family: "Trebuchet MS";
+    font-family: "Arial";
 }
 label {
     display: block;

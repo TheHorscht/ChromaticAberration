@@ -10,3 +10,6 @@ body.chromatic-aberration-filter-wavy {
 body.chromatic-aberration-filter-wavy-subtractive {
     filter: url(#chromaticAberrationFilterWavySubtractive);
 }
+body.filterStatic{
+    filter: url(#filterStatic);
+}
