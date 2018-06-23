@@ -14,7 +14,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["file://*/*"],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "js": ["d3-selection.min.js", "script.js"]
     }
   ],
