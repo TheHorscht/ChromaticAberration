@@ -136,7 +136,9 @@ function createEffect() {
 	let svg = d3.select("body").append("svg")
 			    .attr("xmlns", "http://www.w3.org/2000/svg")
 			    .attr("width", "0")
-			    .attr("height", "0")
+				.attr("height", "0")
+				.style("width", "0")
+				.style("height", "0")
 	let defs = svg.append("defs");
 	// Static Filter
 	let filterStatic = defs.append("filter").attr("id", "chromaticAberrationFilterStatic");

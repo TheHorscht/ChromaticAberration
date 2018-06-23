@@ -1,0 +1,2 @@
+Works for chrome but Firefox is buggy and needs a fix:
+https://bugzilla.mozilla.org/show_bug.cgi?id=1423746
