@@ -32,12 +32,17 @@ async function applyChromaticAberration() {
 	};
 
 	let effect = await initialize();
-	let progress = Array(3).fill().map(() => createPingPongValue());
+	let progress = [5, 7, 4].map(v => {
+		let pingpong = createPingPongValue();
+		return v2 => 0.008 + Math.cos(pingpong(v2 * v * 0.0005) * Math.PI * 2) * 0.004;
+	});
+	let lastFrameTime = Date.now();
 	
 	function loop() {
-		effect.turbu.freq1 = 0.008 + Math.cos(progress[0](0.0000152 * settings.waveSpeed) * Math.PI * 2) * 0.004;
-		effect.turbu.freq2 = 0.008 + Math.cos(progress[1](0.0000223 * settings.waveSpeed) * Math.PI * 2) * 0.004;
-		effect.turbu.freq3 = 0.008 + Math.cos(progress[2](0.0000117 * settings.waveSpeed) * Math.PI * 2) * 0.004;
+		let now = Date.now();
+		let dt = (now - lastFrameTime ) / 1000;
+		lastFrameTime = now;
+		progress.forEach((func, i) => effect.turbu["freq"+(i+1)] = func(settings.waveSpeed * dt));
 		effect.update();
 		window.requestAnimationFrame(loop);
 	}
