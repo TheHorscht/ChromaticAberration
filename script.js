@@ -31,18 +31,15 @@ async function applyChromaticAberration() {
 		}
 	};
 
-	let elements = await initialize();
+	let effect = await initialize();
 	let progress = {};
 	Array("r", "g", "b").forEach(key => progress[key] = createPingPongValue());
 	
 	function loop() {
 		let shit = settings.waveSpeed;
-		elements.turbu.r.setAttribute("baseFrequency", 0.008 + Math.cos(progress.r.value() * Math.PI * 2) * 0.004);
-		elements.turbu.g.setAttribute("baseFrequency", 0.008 + Math.cos(progress.g.value() * Math.PI * 2) * 0.004);
-		elements.turbu.b.setAttribute("baseFrequency", 0.008 + Math.cos(progress.b.value() * Math.PI * 2) * 0.004);
-		elements.turbu.c.setAttribute("baseFrequency", 0.008 + Math.cos(progress.r.value() * Math.PI * 2) * 0.004);
-		elements.turbu.m.setAttribute("baseFrequency", 0.008 + Math.cos(progress.g.value() * Math.PI * 2) * 0.004);
-		elements.turbu.y.setAttribute("baseFrequency", 0.008 + Math.cos(progress.b.value() * Math.PI * 2) * 0.004);
+		effect.turbu.freq1 = 0.008 + Math.cos(progress.r.value() * Math.PI * 2) * 0.004;
+		effect.turbu.freq2 = 0.008 + Math.cos(progress.g.value() * Math.PI * 2) * 0.004;
+		effect.turbu.freq3 = 0.008 + Math.cos(progress.b.value() * Math.PI * 2) * 0.004;
 		progress.r.advance(0.0000152 * settings.waveSpeed);
 		progress.g.advance(0.0000223 * settings.waveSpeed);
 		progress.b.advance(0.0000117 * settings.waveSpeed);
@@ -131,94 +128,92 @@ function loadSettings(onChangeCallbacks) {
 };
 
 function createPingPongValue() {
-	let value = 0, dir = 1;
-	return {
-		value: () => value,
-		advance(t) {
-			value += t * dir;
-			if(value > 1 || value < 0) {
-				dir *= -1;
+	let value = 0;
+	return Object.defineProperties({}, {
+		value: {
+			get: () => value < 0.5
+					   ? value * 2
+					   : 1 - ((value - 0.5) * 2),
+		},
+		advance: {
+			value: v => {
+				value += v * 0.5;
+				if(value > 1) {
+					value %= 1;
+				} else if (value < 0) {
+					value = 1 + (value % 1);
+				}
 			}
 		}
-	};
+	});
 }
 
 async function initialize() {
-	let svg, defs;
-	let namespace = 'http://www.w3.org/2000/svg';
+	let svg = d3.select("body").append("svg")
+			    .attr("xmlns", "http://www.w3.org/2000/svg")
+			    .attr("width", "0")
+			    .attr("height", "0")
+	let defs = svg.append("defs");
+	let filterStatic = defs.append("filter").attr("id", "filterStatic");
+	let staticOffsets = Array(3).fill().map(() => filterStatic.append("feOffset"));
+	staticOffsets.forEach((el, i) => {
+		el.attr("dx", 5 * i)
+		  .attr("dy", 0)
+		  .attr("in", "SourceGraphic")
+		  .attr("result", `offset${i}`)
+	});
+	let staticColorMatrices = Array(3).fill().map(() => filterStatic.append("feColorMatrix"));
+	let matrices = {
+		rgb: ["1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0",
+			  "0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0",
+			  "0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0"],
+		cmy: ["1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0",
+			  "0 0 0 0 1 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0",
+			  "0 0 0 0 1 0 0 0 0 1 0 0 1 0 0 0 0 0 1 0"]
+	};
+	staticColorMatrices.forEach((el, i) => {
+		el.attr("values", matrices.rgb[i])
+		  .attr("in", `offset${i}`)
+		  .attr("result", `separated${i}`)
+	});
+	filterStatic.append("feBlend")
+		.attr("in", "separated0")
+		.attr("in2", "separated1")
+		.attr("result", "blendOne");
+	filterStatic.append("feBlend")
+		.attr("in", "blendOne")
+		.attr("in2", "separated2");
 
-	svg = d3.select('body').append('svg')
-			.attr("xmlns", "namespace")
-			.attr("width", "0")
-			.attr("height", "0")
-	defs = svg.append('defs');
-	let filterStatic = u('<filter>').attr("id", "filterStatic");
-	let staticOffsets = Array(3).fill().map(() => u(document.createElementNS(namespace, "feOffset")));
-	staticOffsets.forEach((el, i) => el.attr({
-		dx: 5* i, dy: 0,
-		in: "SourceGraphic", result: `offset${i}` }));
-	filterStatic.append(_ => _, staticOffsets);
-	let staticColorMatrices = Array(3).fill().map(() => u(document.createElementNS(namespace, "feColorMatrix")));
-	let matrices = ["1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0", "0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0", "0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0"];
-	staticColorMatrices.forEach((el, i) => el.attr({
-		values: matrices[i],
-		in: `offset${i}`, result: `separated${i}` }));
-	filterStatic.append(_ => _, staticColorMatrices);
-	let blendOne = u(document.createElementNS(namespace, "feBlend")).attr({
-		in: "separated0", in2: "separated1",
-		result: "blendOne" });
-	let blendTwo = u(document.createElementNS(namespace, "feBlend")).attr({ in: "blendOne", in2: "separated2" });
-	filterStatic.append(blendOne);
-	filterStatic.append(blendTwo);
-	defs.append(filterStatic);
-
-	let result = {
-		turbu: {},
+	let effect = {
 		offset: {},
+		turbu: { freq1: 0, freq2: 0, freq3: 0 },
+		displacement: { scale1: 0, scale2: 0, scale3: 0 },
 	};
 	// ( ͡° ͜ʖ ͡°) Impressed?
-	let proto = u().__proto__;
+	let attrFn = d3.select().__proto__.attr;
 	let createAccessors = (el, attr) => {
-		let umbrellaAttr = proto.attr.bind(el, attr);
-		return { get: umbrellaAttr, set: umbrellaAttr };
+		let ttr = attrFn.bind(el, attr);
+		return { get: ttr, set: ttr };
 	};
-	Object.defineProperties(result.offset, {
-		c1x: createAccessors(staticOffsets[0], "dx"),
-		c2x: createAccessors(staticOffsets[1], "dx"),
-		c3x: createAccessors(staticOffsets[2], "dx")
+	Object.defineProperties(effect.offset, {
+		x1: createAccessors(staticOffsets[0], "dx"),
+		x2: createAccessors(staticOffsets[1], "dx"),
+		x3: createAccessors(staticOffsets[2], "dx"),
+		y1: createAccessors(staticOffsets[0], "dy"),
+		y2: createAccessors(staticOffsets[1], "dy"),
+		y3: createAccessors(staticOffsets[2], "dy"),
 	});
+/* 	Object.defineProperties(effect.turbu, {
+		x1: createAccessors(staticOffsets[0], "baseFrequency"),
+		x2: createAccessors(staticOffsets[1], "baseFrequency"),
+		x3: createAccessors(staticOffsets[2], "baseFrequency"),
+	}); */
 	// Dont forget to set dx etc
-/* 	result.offset.c1x = 0;
-	result.offset.c1x = 0;
-	result.offset.c1x = 0; */
+/* 	effect.offset.c1x = 0;
+	effect.offset.c1x = 0;
+	effect.offset.c1x = 0; */
 
-	return {
-		svg,
-		turbu: {
-			r: document.getElementById("chromaticAberrationTurbuR"),
-			g: document.getElementById("chromaticAberrationTurbuG"),
-			b: document.getElementById("chromaticAberrationTurbuB"),
-			c: document.getElementById("chromaticAberrationTurbuC"),
-			m: document.getElementById("chromaticAberrationTurbuM"),
-			y: document.getElementById("chromaticAberrationTurbuY")
-		},
-		displacement: {
-			r: document.getElementById("chromaticAberrationDisplacementR"),
-			g: document.getElementById("chromaticAberrationDisplacementG"),
-			b: document.getElementById("chromaticAberrationDisplacementB"),
-			c: document.getElementById("chromaticAberrationDisplacementC"),
-			m: document.getElementById("chromaticAberrationDisplacementM"),
-			y: document.getElementById("chromaticAberrationDisplacementY")
-		},
-		offset: {
-			r: document.getElementById("chromaticAberrationOffsetRed"),
-			g: document.getElementById("chromaticAberrationOffsetGreen"),
-			b: document.getElementById("chromaticAberrationOffsetBlue"),
-			c: document.getElementById("chromaticAberrationOffsetCyan"),
-			m: document.getElementById("chromaticAberrationOffsetMagenta"),
-			y: document.getElementById("chromaticAberrationOffsetYellow")
-		}
-	};
+	return effect;
 }
 
 applyChromaticAberration();
