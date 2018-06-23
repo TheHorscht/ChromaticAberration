@@ -13,6 +13,7 @@ async function applyChromaticAberration() {
 	}
 	let onChangeCallbacks = {
 		enabled(value, settings) {
+			init();
 			updateBodyStyle(settings);
 		},
 		wavy(value, settings) {
@@ -25,20 +26,63 @@ async function applyChromaticAberration() {
 			setEffectStrength(settings.strengthX, value);
 		},
 		additive(value, settings) {
-			effect.setMode(value ? "rgb" : "cmy");
+			if(effect !== null) {
+				effect.setMode(value ? "rgb" : "cmy");
+			}
 		},
 		waveStrength(value) {
 			setWaveStrength(value);
 		}
 	};
 
-	let effect = createEffect();
+	function setWaveStrength(value) {
+		if(effect !== null) {
+			effect.displacement.scale1 = value;
+			effect.displacement.scale2 = value;
+			effect.displacement.scale3 = value;
+			effect.update();
+		}
+	}
+
+	function setEffectStrength(x, y) {
+		if(effect !== null) {
+			effect.offset.x1 = x;
+			effect.offset.y1 = y;
+			effect.offset.x3 = -x;
+			effect.offset.y3 = -y;
+			effect.update();
+		}
+	}
+
+	let effect = null;
+	let settings = await loadSettings(onChangeCallbacks);
+	if(settings.enabled) {
+		init();
+	}
+	function init() {
+		if(effect === null) {
+			effect = createEffect();
+			updateBodyStyle(settings);
+			setWaveStrength(settings.waveStrength);
+			setEffectStrength(settings.strengthX, settings.strengthY);
+			effect.setMode(settings.additive ? "rgb" : "cmy");
+			window.requestAnimationFrame(loop);
+		}
+	}
+	// When do we need to insert SVG?
+	// When we load a page and settings.enabled is true
+	// When we load a page and settings.enabled is false but
+	// later enabled
+	chrome.runtime.onMessage.addListener(msg => {
+		if(msg.command === "settingsChanged") {
+			settings[msg.setting] = msg.value;
+		}
+	});
 	let progress = [5, 7, 4].map(v => {
 		let pingpong = createPingPongValue();
 		return v2 => 0.02 + Math.cos(pingpong(v2 * v * 0.0008) * Math.PI * 2) * 0.01;
 	});
 	let lastFrameTime = Date.now();
-	
 	function loop() {
 		let now = Date.now();
 		let dt = (now - lastFrameTime ) / 1000;
@@ -47,33 +91,6 @@ async function applyChromaticAberration() {
 		effect.update();
 		window.requestAnimationFrame(loop);
 	}
-
-	function setWaveStrength(value) {
-		effect.displacement.scale1 = value;
-		effect.displacement.scale2 = value;
-		effect.displacement.scale3 = value;
-		effect.update();
-	}
-
-	function setEffectStrength(x, y) {
-		effect.offset.x1 = x;
-		effect.offset.y1 = y;
-		effect.offset.x3 = -x;
-		effect.offset.y3 = -y;
-		effect.update();
-	}
-
-	let settings = await loadSettings(onChangeCallbacks);
-	updateBodyStyle(settings);
-	setWaveStrength(settings.waveStrength);
-	setEffectStrength(settings.strengthX, settings.strengthY);
-	effect.setMode(settings.additive ? "rgb" : "cmy");
-	chrome.runtime.onMessage.addListener(msg => {
-		if(msg.command === "settingsChanged") {
-			settings[msg.setting] = msg.value;
-		}
-	});
-	window.requestAnimationFrame(loop);
 }
 
 function loadSettings(onChangeCallbacks) {
