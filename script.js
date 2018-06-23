@@ -67,6 +67,7 @@ async function applyChromaticAberration() {
 	updateBodyStyle(settings);
 	setWaveStrength(settings.waveStrength);
 	setEffectStrength(settings.strengthX, settings.strengthY);
+	effect.setMode(settings.additive ? "rgb" : "cmy");
 	chrome.runtime.onMessage.addListener(msg => {
 		if(msg.command === "settingsChanged") {
 			settings[msg.setting] = msg.value;

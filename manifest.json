@@ -1,6 +1,6 @@
 {
   "name": "ChromaticAberration",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "manifest_version": 2,
   "description": "Makes everything look horrible or super cool (depends on your taste), by putting a chromatic aberration filter over every page. Also has a cool wobbly effect included as a bonus.",
   "applications": {
@@ -17,9 +17,6 @@
       "matches": ["file://*/*"],
       "js": ["d3-selection.min.js", "script.js"]
     }
-  ],
-  "web_accessible_resources": [
-    "chromatic-aberration.svg"
   ],
   "browser_action": {
     "default_icon": {
