@@ -1,4 +1,4 @@
-browser.runtime.onInstalled.addListener(function() {
+chrome.runtime.onInstalled.addListener(function() {
     chrome.storage.local.set({
         enabled: true,
         wavy: false,

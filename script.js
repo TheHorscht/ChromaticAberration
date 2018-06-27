@@ -1,7 +1,5 @@
 async function applyChromaticAberration() {
 	function updateBodyStyle(settings) {
-		/* document.body.classList.remove("chromaticAberrationFilterStatic");
-		document.body.classList.remove("chromaticAberrationFilterWavy"); */
 		document.body.style.filter = "";
 		if(settings.enabled) {
 			if(settings.wavy) {
@@ -69,10 +67,6 @@ async function applyChromaticAberration() {
 			window.requestAnimationFrame(loop);
 		}
 	}
-	// When do we need to insert SVG?
-	// When we load a page and settings.enabled is true
-	// When we load a page and settings.enabled is false but
-	// later enabled
 	chrome.runtime.onMessage.addListener(msg => {
 		if(msg.command === "settingsChanged") {
 			settings[msg.setting] = msg.value;
