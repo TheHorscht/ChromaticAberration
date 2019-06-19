@@ -5,7 +5,7 @@ chrome.runtime.onInstalled.addListener(function() {
         additive: false,
         strengthX: 3,
         strengthY: 0,
-        waveSpeed: 50,
+        waveSpeed: 5,
         waveStrength: 5,
     });
 });
